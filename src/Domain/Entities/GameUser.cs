@@ -11,4 +11,7 @@ public partial class GameUser
 
     public int IdUser { get; set; }
 
+    public virtual Game IdGameNavigation { get; set; } = null!;
+
+    public virtual User IdUserNavigation { get; set; } = null!;
 }

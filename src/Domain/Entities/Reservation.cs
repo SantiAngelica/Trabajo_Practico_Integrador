@@ -17,4 +17,9 @@ public partial class Reservation
 
     public string? State { get; set; }
 
+    public virtual PropertyTypeField IdFieldNavigation { get; set; } = null!;
+
+    public virtual Game IdGameNavigation { get; set; } = null!;
+
+    public virtual ScheduleProperty IdScheduleNavigation { get; set; } = null!;
 }

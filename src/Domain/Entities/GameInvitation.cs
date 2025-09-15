@@ -12,4 +12,8 @@ public partial class GameInvitation
     public int IdGame { get; set; }
 
     public string State { get; set; } = null!;
+
+    public virtual Game IdGameNavigation { get; set; } = null!;
+
+    public virtual User IdUserRecieverNavigation { get; set; } = null!;
 }

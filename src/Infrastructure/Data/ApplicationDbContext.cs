@@ -117,11 +117,11 @@ public partial class ApplicationDbContext : DbContext
         {
             entity.ToTable("property_type_fields");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.FieldType).HasColumnName("field_type");
             entity.Property(e => e.IdProperty).HasColumnName("id_property");
+
+            entity.HasOne(d => d.IdPropertyNavigation).WithMany(p => p.PropertyTypeFields).HasForeignKey(d => d.IdProperty);
         });
 
         modelBuilder.Entity<Reservation>(entity =>
@@ -196,11 +196,11 @@ public partial class ApplicationDbContext : DbContext
         {
             entity.ToTable("user_fields");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Field).HasColumnName("field");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserFields).HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<UserPosition>(entity =>

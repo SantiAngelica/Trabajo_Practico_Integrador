@@ -12,4 +12,8 @@ public partial class GameAplication
     public int IdGame { get; set; }
 
     public string State { get; set; } = null!;
+
+    public virtual Game IdGameNavigation { get; set; } = null!;
+
+    public virtual User IdUserApplicantNavigation { get; set; } = null!;
 }
