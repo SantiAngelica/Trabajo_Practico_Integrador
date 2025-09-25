@@ -15,7 +15,7 @@ public partial class Reservation
 
     public DateOnly Date { get; set; }
 
-    public string? State { get; set; }
+    public string State { get; set; } = null!;
 
     public virtual PropertyTypeField IdFieldNavigation { get; set; } = null!;
 

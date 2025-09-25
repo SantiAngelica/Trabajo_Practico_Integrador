@@ -27,6 +27,8 @@ public partial class User
 
     public virtual ICollection<Game> Games { get; set; } = new List<Game>();
 
+    public virtual ICollection<Property> Properties { get; set; } = new List<Property>();
+
     public virtual ICollection<UserComent> UserComents { get; set; } = new List<UserComent>();
 
     public virtual ICollection<UserField> UserFields { get; set; } = new List<UserField>();

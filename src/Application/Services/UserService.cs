@@ -19,5 +19,20 @@ public class UserService : IUserService
         var users = await _userRepository.Get();
         return UserDto.CreateList(users);
     }
-    
+
+    public async Task<UserDto> GetUserById(int Id)
+    {
+        var user = await _userRepository.GetById(Id);
+        return UserDto.Create(user);
+    }
+
+    public async Task<bool> DeleteUser(int Id)
+    {
+        return await _userRepository.Delete(Id);
+    }
+
+    public async Task<bool> UpdateUserRol(int id, string newRol)
+    {
+        return await _userRepository.UpdateUserRol(id, newRol);
+    }
 }
