@@ -30,11 +30,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(DbContextOptions =>
 
 #region Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 #endregion
 
 #region Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
 #endregion
 
 var app = builder.Build();

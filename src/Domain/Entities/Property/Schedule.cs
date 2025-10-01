@@ -6,4 +6,10 @@ public class Schedule
     public int StartTime { get; set; }
     public string PropertyId { get; set; } = null!;
     public Property Property { get; set; } = null!;
+
+    public Schedule(int startTime)
+    {
+        Id = Guid.NewGuid().ToString();
+        StartTime = startTime;
+    }
 }

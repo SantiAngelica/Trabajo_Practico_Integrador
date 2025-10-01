@@ -5,7 +5,7 @@ namespace Domain.Entities;
 
 public partial class Game
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
     public string CreatorId { get; set; } = null!;
     public User Creator { get; set; } = null!;
     public int MissingPlayers { get; set; }

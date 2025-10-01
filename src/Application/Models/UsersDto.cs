@@ -12,8 +12,8 @@ public record UserDto(
     RolesEnum Role,
     string Zone,
     IReadOnlyCollection<string> Comments,
-    IReadOnlyCollection<int> FieldsType,
-    IReadOnlyCollection<string> Positions
+    IReadOnlyCollection<FieldDto> FieldsType,
+    IReadOnlyCollection<PositionDto> Positions
 )
 {
     public static UserDto Create(User user) =>
@@ -25,8 +25,8 @@ public record UserDto(
             user.Role,
             user.Zone,
             user.UserComents.Select(c => c.Comment).ToList(),
-            user.UserFields.Select(f => f.Field).ToList(),
-            user.UserPositions.Select(p => p.Position).ToList()
+            user.UserFields.Select(f => new FieldDto(f.Id, f.Field)).ToList(),
+            user.UserPositions.Select(p => new PositionDto(p.Id, p.Position)).ToList()
         );
 
     public static IReadOnlyList<UserDto> CreateList(IReadOnlyList<User> users)

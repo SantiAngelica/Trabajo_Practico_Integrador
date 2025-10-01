@@ -21,4 +21,6 @@ public partial class Property
 
     public List<Field> _propertyFields = new List<Field>();
     public IReadOnlyCollection<Field> Fields => _propertyFields;
+
+    private Property() { }
 }

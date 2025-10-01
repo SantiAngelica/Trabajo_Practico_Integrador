@@ -34,8 +34,6 @@ public partial class User
         List<string> Positions
     )
     {
-        Console.WriteLine(string.Join(", ", FieldsType));
-        Console.WriteLine(string.Join(", ", Positions));
         Name = name;
         Email = email;
         Age = age;

@@ -85,7 +85,6 @@ public class UserController : ControllerBase
         }
     }
 
-
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(string id, RequestUserDto userDto)
     {
