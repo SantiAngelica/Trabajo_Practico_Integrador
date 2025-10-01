@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Models;
+using Domain.Enum;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById(int id)
+    public async Task<IActionResult> GetUserById(string id)
     {
         try
         {
@@ -49,7 +50,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeleteUser(string id)
     {
         try
         {
@@ -66,8 +67,8 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPut("rolechange/{id}")]
-    public async Task<IActionResult> UpdateUserRol(int id, [FromBody] string newRole)
+    [HttpPut("rolechange/{id}/{newRole}")]
+    public async Task<IActionResult> UpdateUserRol(string id, RolesEnum newRole)
     {
         try
         {
@@ -77,6 +78,25 @@ public class UserController : ControllerBase
                 return NotFound();
             }
             return Ok("User role updated successfully");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
+        }
+    }
+
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(string id, RequestUserDto userDto)
+    {
+        try
+        {
+            var updatedUser = await _userService.UpdateUser(id, userDto);
+            if (updatedUser == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedUser);
         }
         catch (Exception e)
         {

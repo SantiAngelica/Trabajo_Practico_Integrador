@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Infrastructure;
+namespace Domain.Entities;
 
 public partial class Game
 {
     public int Id { get; set; }
-
-    public int IdUserCreator { get; set; }
-
+    public string CreatorId { get; set; } = null!;
+    public User Creator { get; set; } = null!;
     public int MissingPlayers { get; set; }
+    public DateOnly Date { get; set; }
+    public int Schedule { get; set; }
+    public int FieldType { get; set; }
 
-    public virtual ICollection<GameAplication> GameAplications { get; set; } = new List<GameAplication>();
+    private List<Participation> _gameParticipations = new List<Participation>();
+    public IReadOnlyCollection<Participation> Participations => _gameParticipations;
 
-    public virtual ICollection<GameInvitation> GameInvitations { get; set; } = new List<GameInvitation>();
-
-    public virtual ICollection<GameUser> GameUsers { get; set; } = new List<GameUser>();
-
-    public virtual User IdUserCreatorNavigation { get; set; } = null!;
-
-    public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+    private List<User> _users = new List<User>();
+    public IReadOnlyCollection<User> Users => _users;
 }

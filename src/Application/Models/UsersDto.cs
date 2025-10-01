@@ -1,31 +1,32 @@
 using System.Net;
-using Infrastructure;
+using Domain.Entities;
+using Domain.Enum;
 
 namespace Application.Models;
 
 public record UserDto(
-    int Id,
+    string Id,
     string Name,
     string Email,
     int Age,
-    string Rol,
+    RolesEnum Role,
     string Zone,
-    IReadOnlyCollection<UserComentDto> Comments,
-    IReadOnlyCollection<UserFieldDto> FieldsType,
-    IReadOnlyCollection<UserPositionDto> Positions
+    IReadOnlyCollection<string> Comments,
+    IReadOnlyCollection<int> FieldsType,
+    IReadOnlyCollection<string> Positions
 )
 {
     public static UserDto Create(User user) =>
-        new(
+        new UserDto(
             user.Id,
             user.Name,
             user.Email,
             user.Age,
-            user.Rol,
+            user.Role,
             user.Zone,
-            user.UserComents.Select(c => new UserComentDto(c.Id, c.Body)).ToList(),
-            user.UserFields.Select(f => new UserFieldDto(f.Id, f.Field)).ToList(),
-            user.UserPositions.Select(p => new UserPositionDto(p.Id, p.Position)).ToList()
+            user.UserComents.Select(c => c.Comment).ToList(),
+            user.UserFields.Select(f => f.Field).ToList(),
+            user.UserPositions.Select(p => p.Position).ToList()
         );
 
     public static IReadOnlyList<UserDto> CreateList(IReadOnlyList<User> users)
@@ -34,17 +35,12 @@ public record UserDto(
     }
 }
 
-public record UpdateUserDto(
+public record RequestUserDto(
     string Name,
     string Email,
+    string Password,
     int Age,
     string Zone,
-    IReadOnlyCollection<int> FieldsType,
-    IReadOnlyCollection<string> Positions
+    List<int> FieldsType,
+    List<string> Positions
 );
-
-public record UserFieldDto(int Id, int Field);
-
-public record UserComentDto(int Id, string Body);
-
-public record UserPositionDto(int Id, string Position);

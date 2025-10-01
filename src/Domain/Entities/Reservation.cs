@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain.Enum;
 
-namespace Infrastructure;
+namespace Domain.Entities;
 
 public partial class Reservation
 {
     public int Id { get; set; }
 
-    public int IdSchedule { get; set; }
+    public string ScheduleId { get; set; } = null!;
+    public Schedule Schedule { get; set; } = null!;
 
-    public int IdGame { get; set; }
+    public string GameId { get; set; } = null!;
+    public Game Game { get; set; } = null!;
 
-    public int IdField { get; set; }
+    public string FieldId { get; set; } = null!;
+    public Field Field { get; set; } = null!;
 
     public DateOnly Date { get; set; }
 
-    public string State { get; set; } = null!;
-
-    public virtual PropertyTypeField IdFieldNavigation { get; set; } = null!;
-
-    public virtual Game IdGameNavigation { get; set; } = null!;
-
-    public virtual ScheduleProperty IdScheduleNavigation { get; set; } = null!;
+    public States State { get; set; }
 }

@@ -1,3 +1,5 @@
+using Domain.Entities;
+using Domain.Enum;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,13 @@ public class UserRepository : IUserRepository
         _context = dbContext;
     }
 
+    public async Task<User> Create(User user)
+    {
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
     public async Task<IReadOnlyList<User>> Get()
     {
         return await _context
@@ -21,7 +30,7 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
-    public async Task<User> GetById(int Id)
+    public async Task<User> GetById(string Id)
     {
         return await _context
             .Users.Include(u => u.UserFields)
@@ -30,7 +39,7 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == Id);
     }
 
-    public async Task<bool> Delete(int Id)
+    public async Task<bool> Delete(string Id)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Id);
         if (user == null)
@@ -43,7 +52,7 @@ public class UserRepository : IUserRepository
         return true;
     }
 
-    public async Task<bool> UpdateUserRol(int id, string newRol)
+    public async Task<bool> UpdateUserRol(string id, RolesEnum newRol)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
@@ -51,9 +60,33 @@ public class UserRepository : IUserRepository
             return false;
         }
 
-        user.Rol = newRol;
+        user.Role = newRol;
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<User> UpdateUser(string id, User UpdateUser)
+    {
+        var user = await _context
+            .Users.Include(u => u.UserPositions)
+            .Include(u => u.UserFields)
+            .FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null)
+        {
+            return null;
+        }
+        _context.UserFields.RemoveRange(_context.UserFields.Where(uf => uf.UserId == id));
+        _context.UserPositions.RemoveRange(_context.UserPositions.Where(up => up.UserId == id));
+        user.Update(
+            UpdateUser.Name,
+            UpdateUser.Email,
+            UpdateUser.Age,
+            UpdateUser.Zone,
+            UpdateUser.UserFields.Select(f => f.Field).ToList(),
+            UpdateUser.UserPositions.Select(p => p.Position).ToList()
+        );
+        await _context.SaveChangesAsync();
+        return user;
     }
 }

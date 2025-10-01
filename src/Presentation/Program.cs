@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
 using Infrastructure.Data;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +15,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
+var connection = new SqliteConnection("Data Source=football-finder.db");
+connection.Open();
+
+using (var comman = connection.CreateCommand())
+{
+    comman.CommandText = "PRAGMA jorunal_mode = DELETE;";
+    comman.ExecuteNonQuery();
+}
+builder.Services.AddDbContext<ApplicationDbContext>(DbContextOptions =>
+{
+    DbContextOptions.UseSqlite(connection);
+});
 
 #region Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -23,6 +34,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 #region Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 #endregion
 
 var app = builder.Build();
