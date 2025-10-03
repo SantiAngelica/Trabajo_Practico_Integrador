@@ -20,4 +20,13 @@ public partial class Reservation
     public DateOnly Date { get; set; }
 
     public States State { get; set; }
+
+    public Reservation(string scheduleId, string gameId, string fieldId, DateOnly date)
+    {
+        ScheduleId = scheduleId;
+        GameId = gameId;
+        FieldId = fieldId;
+        Date = date;
+        State = States.Pendiente;
+    }
 }

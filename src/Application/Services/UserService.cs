@@ -41,8 +41,6 @@ public class UserService : IUserService
 
     public async Task<UserDto> UpdateUser(string id, RequestUserDto userDto)
     {
-        
-
         var updatedUser = await _userRepository.UpdateUser(
             id,
             new User(

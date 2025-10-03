@@ -12,8 +12,9 @@ public record PropertyDto(
     IReadOnlyCollection<ScheduleDto> Schedules
 )
 {
-    public static PropertyDto Create(Property property) =>
-        new PropertyDto(
+    public static PropertyDto Create(Property property)
+    {
+        return new PropertyDto(
             property.Id,
             property.Name,
             property.Adress,
@@ -22,6 +23,7 @@ public record PropertyDto(
             property.Fields.Select(f => new FieldDto(f.Id, f.FieldType)).ToList(),
             property.Schedules.Select(s => new ScheduleDto(s.Id, s.StartTime)).ToList()
         );
+    }
 
     public static IReadOnlyList<PropertyDto> CreateList(IReadOnlyList<Property> properties)
     {

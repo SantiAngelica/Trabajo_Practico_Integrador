@@ -30,7 +30,7 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
-    public async Task<User> GetById(string Id)
+    public async Task<User?> GetById(string Id)
     {
         return await _context
             .Users.Include(u => u.UserFields)
@@ -66,7 +66,7 @@ public class UserRepository : IUserRepository
         return true;
     }
 
-    public async Task<User> UpdateUser(string id, User UpdateUser)
+    public async Task<User?> UpdateUser(string id, User UpdateUser)
     {
         var user = await _context
             .Users.Include(u => u.UserPositions)

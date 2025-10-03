@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace Domain.Enum;
 
 public enum ParticipationType
@@ -8,7 +10,12 @@ public enum ParticipationType
 
 public enum States
 {
+    [EnumMember(Value = "pendiente")]
     Pendiente,
+
+    [EnumMember(Value = "aceptada")]
     Aceptada,
+
+    [EnumMember(Value = "rechazada")]
     Rechazada,
 }

@@ -13,11 +13,11 @@ public class PropertyRepository : IPropertyRepository
         _context = dbContext;
     }
 
-    public async Task<Property> Create(Property property)
+    public async Task<Property?> Create(Property property)
     {
         _context.Propertys.Add(property);
         await _context.SaveChangesAsync();
-        return property;
+        return await GetByOwnerId(property.OwnerId);
     }
 
     public async Task<IReadOnlyList<Property>> Get()
@@ -77,5 +77,26 @@ public class PropertyRepository : IPropertyRepository
         _context.Propertys.Remove(property);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<Schedule?> GetScheduleById(string scheduleId)
+    {
+        return await _context.Schedules.FirstOrDefaultAsync(s => s.Id == scheduleId);
+    }
+
+    public async Task<Field?> GetFieldById(string fieldId)
+    {
+        return await _context.Fields.FirstOrDefaultAsync(f => f.Id == fieldId);
+    }
+
+    public async Task<Reservation?> GetExistingReservation(
+        DateOnly date,
+        string fieldId,
+        string scheduleId
+    )
+    {
+        return await _context.Reservations.FirstOrDefaultAsync(r =>
+            r.Date == date && r.FieldId == fieldId && r.ScheduleId == scheduleId
+        );
     }
 }
