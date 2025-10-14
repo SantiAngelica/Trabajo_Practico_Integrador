@@ -1,26 +1,16 @@
 using Domain.Entities;
+using Domain.Enum;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class PropertyRepository : IPropertyRepository
+public class PropertyRepository : EfRepository<Property>, IPropertyRepository
 {
-    private readonly ApplicationDbContext _context;
-
     public PropertyRepository(ApplicationDbContext dbContext)
-    {
-        _context = dbContext;
-    }
+        : base(dbContext) { }
 
-    public async Task<Property?> Create(Property property)
-    {
-        _context.Propertys.Add(property);
-        await _context.SaveChangesAsync();
-        return await GetByOwnerId(property.OwnerId);
-    }
-
-    public async Task<IReadOnlyList<Property>> Get()
+    public override async Task<IReadOnlyList<Property>> GetAll()
     {
         return await _context
             .Propertys.Include(p => p.Fields)
@@ -40,7 +30,7 @@ public class PropertyRepository : IPropertyRepository
             .FirstOrDefaultAsync(p => p.OwnerId == id);
     }
 
-    public async Task<Property?> UpdateProperty(string id, Property updateProperty)
+    public override async Task<Property?> Update(string id, Property updateProperty)
     {
         var existingProperty = await _context
             .Propertys.Include(p => p.Fields)
@@ -52,6 +42,7 @@ public class PropertyRepository : IPropertyRepository
         {
             return null;
         }
+
         _context.Schedules.RemoveRange(existingProperty.Schedules);
         _context.Fields.RemoveRange(existingProperty.Fields);
 
@@ -66,7 +57,7 @@ public class PropertyRepository : IPropertyRepository
         return existingProperty;
     }
 
-    public async Task<bool> Delete(string id)
+    public override async Task<bool> Delete(string id)
     {
         var property = await _context.Propertys.FirstOrDefaultAsync(p => p.Id == id);
         if (property == null)
@@ -89,14 +80,13 @@ public class PropertyRepository : IPropertyRepository
         return await _context.Fields.FirstOrDefaultAsync(f => f.Id == fieldId);
     }
 
-    public async Task<Reservation?> GetExistingReservation(
-        DateOnly date,
-        string fieldId,
-        string scheduleId
-    )
+    public async Task<IReadOnlyList<Schedule?>> GetSchedulesByPropertyId(string propertyId)
     {
-        return await _context.Reservations.FirstOrDefaultAsync(r =>
-            r.Date == date && r.FieldId == fieldId && r.ScheduleId == scheduleId
-        );
+        return await _context.Schedules.Where(s => s.PropertyId == propertyId).ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<Field?>> GetFieldsByPropertyId(string propertyId)
+    {
+        return await _context.Fields.Where(f => f.PropertyId == propertyId).ToListAsync();
     }
 }

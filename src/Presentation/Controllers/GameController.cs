@@ -54,4 +54,11 @@ public class GameController : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpGet("/by-property/{propertyId}")]
+    public async Task<IActionResult> GetGamesByPropertyId(string propertyId)
+    {
+        var games = await _gameService.GetGamesByPropertyId(propertyId);
+        return Ok(games);
+    }
 }

@@ -29,4 +29,11 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
         }
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequestUserDto loginRequestUserDto)
+    {
+        var token = await _authService.Login(loginRequestUserDto);
+        return Ok(token);
+    }
 }

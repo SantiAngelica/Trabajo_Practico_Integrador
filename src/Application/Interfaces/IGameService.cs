@@ -12,4 +12,6 @@ public interface IGameService
     Task<GameDto?> AddGame(RequestGameDto requestGameDto);
 
     Task<bool> DeleteGame(string id);
+
+    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(string propertyId);
 }

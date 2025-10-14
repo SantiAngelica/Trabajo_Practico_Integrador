@@ -7,7 +7,7 @@ namespace Application.Interfaces;
 public interface IUserService
 {
     Task<IReadOnlyList<UserDto>> GetUsers();
-    Task<UserDto> GetUserById(string Id);
+    Task<UserDto?> GetUserById(string Id);
 
     Task<bool> DeleteUser(string Id);
 

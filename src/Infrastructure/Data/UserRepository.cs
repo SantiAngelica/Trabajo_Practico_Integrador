@@ -5,23 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class UserRepository : IUserRepository
+public class UserRepository : EfRepository<User>, IUserRepository
 {
-    private readonly ApplicationDbContext _context;
-
     public UserRepository(ApplicationDbContext dbContext)
-    {
-        _context = dbContext;
-    }
+        : base(dbContext) { }
 
-    public async Task<User> Create(User user)
-    {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return user;
-    }
-
-    public async Task<IReadOnlyList<User>> Get()
+    public override async Task<IReadOnlyList<User>> GetAll()
     {
         return await _context
             .Users.Include(u => u.UserFields)
@@ -30,7 +19,7 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
-    public async Task<User?> GetById(string Id)
+    public override async Task<User?> GetById(string Id)
     {
         return await _context
             .Users.Include(u => u.UserFields)
@@ -39,17 +28,9 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == Id);
     }
 
-    public async Task<bool> Delete(string Id)
+    public async Task<User?> GetByEmail(string email)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Id);
-        if (user == null)
-        {
-            return false;
-        }
-
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
-        return true;
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public async Task<bool> UpdateUserRol(string id, RolesEnum newRol)
@@ -66,7 +47,7 @@ public class UserRepository : IUserRepository
         return true;
     }
 
-    public async Task<User?> UpdateUser(string id, User UpdateUser)
+    public override async Task<User?> Update(string id, User UpdateUser)
     {
         var user = await _context
             .Users.Include(u => u.UserPositions)

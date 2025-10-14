@@ -5,6 +5,6 @@ namespace Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<UserDto> Register(RequestUserDto user);
-    Task<string> Login(string email, string password);
+    Task<string> Register(RequestUserDto user);
+    Task<string> Login(LoginRequestUserDto loginRequestUserDto);
 }

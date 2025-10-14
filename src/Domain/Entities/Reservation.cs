@@ -6,7 +6,7 @@ namespace Domain.Entities;
 
 public partial class Reservation
 {
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     public string ScheduleId { get; set; } = null!;
     public Schedule Schedule { get; set; } = null!;
@@ -23,6 +23,7 @@ public partial class Reservation
 
     public Reservation(string scheduleId, string gameId, string fieldId, DateOnly date)
     {
+        Id = Guid.NewGuid().ToString();
         ScheduleId = scheduleId;
         GameId = gameId;
         FieldId = fieldId;

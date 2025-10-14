@@ -44,3 +44,5 @@ public record RequestUserDto(
     List<int> FieldsType,
     List<string> Positions
 );
+
+public record LoginRequestUserDto(string Email, string Password);

@@ -1,5 +1,8 @@
+using System.Text.RegularExpressions;
+using Application.Helpers;
 using Application.Interfaces;
 using Application.Models;
+using Core.Exceptions;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -8,14 +11,26 @@ namespace Application.Services;
 public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IAuthSecurity _authSecurity;
 
-    public AuthService(IUserRepository userRepository)
+    public AuthService(IUserRepository userRepository, IAuthSecurity authSecurity)
     {
         _userRepository = userRepository;
+        _authSecurity = authSecurity;
     }
 
-    public async Task<UserDto> Register(RequestUserDto user)
+    public async Task<string> Register(RequestUserDto user)
     {
+        var existingUser = await _userRepository.GetByEmail(user.Email);
+        if (existingUser != null)
+        {
+            throw new AppValidationException("Email is already registered.");
+        }
+        string? isValidUser = UserHelper.IsValidUserData(user);
+        if (isValidUser != null)
+        {
+            throw new AppValidationException(isValidUser);
+        }
         User newUser = new User(
             user.Name,
             user.Email,
@@ -26,22 +41,25 @@ public class AuthService : IAuthService
             user.Positions
         );
         var createdUser = await _userRepository.Create(newUser);
-        Console.WriteLine(
-            $"Id: {createdUser.Id}, Name: {createdUser.Name}, Email: {createdUser.Email}, Age: {createdUser.Age}, Zone: {createdUser.Zone}, Role: {createdUser.Role}"
-        );
-        Console.WriteLine(
-            "Fields: " + string.Join(", ", createdUser.UserFields.Select(f => f.Field))
-        );
-        Console.WriteLine(
-            "Positions: " + string.Join(", ", createdUser.UserPositions.Select(p => p.Position))
-        );
-
-        return UserDto.Create(createdUser);
+        if (createdUser == null)
+            throw new Exception("Error when creating user");
+        return _authSecurity.GeneraToken(createdUser);
     }
 
-    public Task<string> Login(string email, string password)
+    public async Task<string> Login(LoginRequestUserDto loginRequestUserDto)
     {
-        // Implementation for user login
-        throw new NotImplementedException();
+        var user = await _userRepository.GetByEmail(loginRequestUserDto.Email);
+        if (user == null)
+        {
+            throw new AppNotFoundException(
+                $"User with email: {loginRequestUserDto.Email} not found"
+            );
+        }
+
+        if (user.Password == loginRequestUserDto.Password)
+        {
+            return _authSecurity.GeneraToken(user);
+        }
+        throw new AppValidationException("Password incorrect");
     }
 }

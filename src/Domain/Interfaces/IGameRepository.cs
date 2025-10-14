@@ -2,10 +2,9 @@ using Domain.Entities;
 
 namespace Domain.Interfaces;
 
-public interface IGameRepository
+public interface IGameRepository : IRepositoryBase<Game>
 {
-    Task<IReadOnlyList<Game>> Get();
-    Task<Game?> GetById(string id);
-    Task<Game?> Add(Game game, Reservation reservation);
-    Task<bool> Delete(string id);
+    Task<IReadOnlyList<Game>> GetByPropertyId(string propertyId);
+
+    Task<Game?> GetByReservationId(string reservationId);
 }

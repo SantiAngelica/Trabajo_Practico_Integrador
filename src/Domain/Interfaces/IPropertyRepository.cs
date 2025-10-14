@@ -1,15 +1,15 @@
 using Domain.Entities;
+using Domain.Enum;
 
 namespace Domain.Interfaces;
 
-public interface IPropertyRepository
+public interface IPropertyRepository : IRepositoryBase<Property>
 {
-    Task<Property?> Create(Property property);
-    Task<IReadOnlyList<Property>> Get();
     Task<Property?> GetByOwnerId(string id);
-    Task<Property?> UpdateProperty(string id, Property updateProperty);
-    Task<bool> Delete(string id);
     Task<Schedule?> GetScheduleById(string scheduleId);
     Task<Field?> GetFieldById(string fieldId);
-    Task<Reservation?> GetExistingReservation(DateOnly date, string fieldId, string ScheduleId);
+
+    Task<IReadOnlyList<Schedule?>> GetSchedulesByPropertyId(string propertyId);
+
+    Task<IReadOnlyList<Field?>> GetFieldsByPropertyId(string propertyId);
 }

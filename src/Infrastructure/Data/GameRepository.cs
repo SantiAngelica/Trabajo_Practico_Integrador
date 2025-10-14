@@ -1,19 +1,16 @@
 using Domain.Entities;
+using Domain.Enum;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class GameRepository : IGameRepository
+public class GameRepository : EfRepository<Game>, IGameRepository
 {
-    private readonly ApplicationDbContext _context;
-
     public GameRepository(ApplicationDbContext dbContext)
-    {
-        _context = dbContext;
-    }
+        : base(dbContext) { }
 
-    public async Task<IReadOnlyList<Game>> Get()
+    public override async Task<IReadOnlyList<Game>> GetAll()
     {
         return await _context
             .Games.Include(g => g.reservation)
@@ -25,13 +22,13 @@ public class GameRepository : IGameRepository
             .Where(g =>
                 g.MissingPlayers > 0
                 && g.Date >= DateOnly.FromDateTime(DateTime.Now)
-                && g.reservation.State == Domain.Enum.States.Aceptada
+                && g.reservation.State == States.Aceptada
             )
             .AsSplitQuery()
             .ToListAsync();
     }
 
-    public async Task<Game?> GetById(string id)
+    public override async Task<Game?> GetById(string id)
     {
         return await _context
             .Games.Include(g => g.Creator)
@@ -44,23 +41,30 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 
-    public async Task<Game?> Add(Game game, Reservation reservation)
+    public async Task<IReadOnlyList<Game>> GetByPropertyId(string propertyId)
     {
-        _context.Games.Add(game);
-        _context.Reservations.Add(reservation);
-        await _context.SaveChangesAsync();
-        return await this.GetById(game.Id);
+        return await _context
+            .Games.Include(g => g.reservation)
+            .Include(g => g.reservation.Schedule)
+            .Include(g => g.reservation.Field)
+            .Include(g => g.reservation.Schedule.Property)
+            .Include(g => g.Creator)
+            .Include(g => g.reservation.Schedule.Property.Owner)
+            .Where(g => g.reservation.Schedule.PropertyId == propertyId)
+            .AsSplitQuery()
+            .ToListAsync();
     }
 
-    public async Task<bool> Delete(string id)
+    public async Task<Game?> GetByReservationId(string reservationId)
     {
-        var existingGame = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
-        if (existingGame == null)
-        {
-            return false;
-        }
-        _context.Games.Remove(existingGame);
-        await _context.SaveChangesAsync();
-        return true;
+        return await _context
+            .Games.Include(g => g.Creator)
+            .Include(g => g.reservation)
+            .Include(g => g.reservation.Schedule)
+            .Include(g => g.reservation.Field)
+            .Include(g => g.reservation.Schedule.Property)
+            .Include(g => g.reservation.Schedule.Property.Owner)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(g => g.reservation.Id == reservationId);
     }
 }

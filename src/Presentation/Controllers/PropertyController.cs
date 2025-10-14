@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Models;
+using Domain.Enum;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
@@ -18,86 +19,71 @@ public class PropertyController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProperty([FromBody] RequestPropertyDto propertyDto)
     {
-        try
-        {
-            var createdProperty = await _propertyService.CreateProperty(propertyDto);
-            return CreatedAtAction(
-                nameof(GetPropertyByOwnerId),
-                new { id = createdProperty.Id },
-                createdProperty
-            );
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        var createdProperty = await _propertyService.CreateProperty(propertyDto);
+        return CreatedAtAction(
+            nameof(GetPropertyByOwnerId),
+            new { id = createdProperty.Id },
+            createdProperty
+        );
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllProperties()
     {
-        try
-        {
-            var properties = await _propertyService.GetProperties();
-            return Ok(properties);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        var properties = await _propertyService.GetProperties();
+        return Ok(properties);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPropertyByOwnerId(string id)
     {
-        try
+        var property = await _propertyService.GetPropertyById(id);
+        if (property == null)
         {
-            var property = await _propertyService.GetPropertyById(id);
-            if (property == null)
-            {
-                return NotFound();
-            }
-            return Ok(property);
+            return NotFound();
         }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        return Ok(property);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProperty(string id, [FromBody] RequestPropertyDto updatePropertyDto)
+    public async Task<IActionResult> UpdateProperty(
+        string id,
+        [FromBody] RequestPropertyDto updatePropertyDto
+    )
     {
-        try
+        var updatedProperty = await _propertyService.UpdateProperty(id, updatePropertyDto);
+        if (updatedProperty == null)
         {
-            var updatedProperty = await _propertyService.UpdateProperty(id, updatePropertyDto);
-            if (updatedProperty == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedProperty);
+            return NotFound();
         }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        return Ok(updatedProperty);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProperty(string id)
     {
-        try
+        var deleted = await _propertyService.DeleteProperty(id);
+        if (!deleted)
         {
-            var deleted = await _propertyService.DeleteProperty(id);
-            if (!deleted)
-            {
-                return NotFound();
-            }
-            return NoContent();
+            return NotFound();
         }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        return NoContent();
+    }
+
+    [HttpPost("{rid}/acepted")]
+    public async Task<IActionResult> HandleReservation(string rid, [FromQuery] States state)
+    {
+        var gameDto = await _propertyService.HandleReservation(rid, state);
+        return Ok(gameDto);
+    }
+
+    [HttpGet("property-schedules")]
+    public async Task<IActionResult> GetReservationsByPropertyId(
+        [FromQuery] string propertyId,
+        [FromQuery] DateOnly date
+    )
+    {
+        var reservations = await _propertyService.GetReservationsByPropertyId(propertyId, date);
+        return Ok(reservations);
     }
 }
