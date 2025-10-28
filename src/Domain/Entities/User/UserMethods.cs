@@ -38,7 +38,8 @@ public partial class User
         Email = email;
         Age = age;
         Zone = zone;
-
+        this._userPositions.Clear();
+        this._userFields.Clear();
         this.AddFields(FieldsType);
         this.AddPositions(Positions);
     }

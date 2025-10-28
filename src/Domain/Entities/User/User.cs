@@ -23,9 +23,6 @@ public partial class User
     private List<UserComent> _userComents = new List<UserComent>();
     public IReadOnlyCollection<UserComent> UserComents => _userComents;
 
-    private List<Game> _games = new List<Game>();
-    public IReadOnlyCollection<Game> Games => _games;
-
     private List<Game> _gamesCreated = new List<Game>();
     public IReadOnlyCollection<Game> GamesCreated => _gamesCreated;
 

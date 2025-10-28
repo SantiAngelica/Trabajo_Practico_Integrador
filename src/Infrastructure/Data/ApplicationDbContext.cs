@@ -37,10 +37,13 @@ public partial class ApplicationDbContext : DbContext
             .HasForeignKey(g => g.CreatorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder
-            .Entity<Game>()
-            .HasMany(g => g.Users)
-            .WithMany(u => u.Games)
-            .UsingEntity(j => j.ToTable("GamePlayers"));
+        modelBuilder.Entity<Game>().Navigation(g => g.Creator).AutoInclude();
+
+        modelBuilder.Entity<Participation>().Navigation(p => p.Game).AutoInclude();
+        modelBuilder.Entity<Participation>().Navigation(p => p.User).AutoInclude();
+
+        modelBuilder.Entity<Property>().Navigation(p => p.Fields).AutoInclude();
+        modelBuilder.Entity<Property>().Navigation(p => p.Schedules).AutoInclude();
+        modelBuilder.Entity<Property>().Navigation(p => p.Owner).AutoInclude();
     }
 }

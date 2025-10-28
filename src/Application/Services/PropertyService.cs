@@ -29,17 +29,15 @@ public class PropertyService : IPropertyService
     {
         var ExistingProperty = await _propertyRepository.GetByOwnerId(propertyDto.OwnerId);
         if (ExistingProperty != null)
-        {
             throw new AppValidationException("Owner already has a property.");
-        }
+
         string? IsValidPropertyData = PropertyHelper.IsValidPropertyData(
             propertyDto.FieldsType,
             propertyDto.Schedules
         );
         if (IsValidPropertyData != null)
-        {
             throw new AppValidationException(IsValidPropertyData);
-        }
+
         var newProperty = new Property(
             propertyDto.Name,
             propertyDto.Address,
@@ -49,7 +47,9 @@ public class PropertyService : IPropertyService
             propertyDto.Schedules
         );
         var createdProperty = await _propertyRepository.Create(newProperty);
-        if (createdProperty == null) throw new Exception("Erro when creating property");
+        if (createdProperty == null)
+            throw new Exception("Erro when creating property");
+        await _propertyRepository.SaveChangesAsync();
         return PropertyDto.Create(createdProperty);
     }
 
@@ -63,71 +63,61 @@ public class PropertyService : IPropertyService
     {
         var property = await _propertyRepository.GetByOwnerId(id);
         if (property == null)
-        {
             throw new AppNotFoundException("Property not found.");
-        }
+
         return PropertyDto.Create(property);
     }
 
     public async Task<PropertyDto?> UpdateProperty(string id, RequestPropertyDto updateProperty)
     {
-        var existingProperty = await _propertyRepository.GetById(id);
-        if (existingProperty == null)
-        {
+        var property = await _propertyRepository.GetById(id);
+        if (property == null)
             throw new AppNotFoundException("Property not found.");
-        }
+
         string? IsValidPropertyData = PropertyHelper.IsValidPropertyData(
             updateProperty.FieldsType,
             updateProperty.Schedules
         );
         if (IsValidPropertyData != null)
-        {
             throw new AppValidationException(IsValidPropertyData);
-        }
-        var propertyToUpdate = new Property(
+
+        property.Update(
             updateProperty.Name,
             updateProperty.Address,
             updateProperty.Zone,
-            "",
             updateProperty.FieldsType,
             updateProperty.Schedules
         );
-        var updatedProperty = await _propertyRepository.Update(id, propertyToUpdate);
-        if (updatedProperty == null)
-            throw new AppNotFoundException("Property not found");
-        return PropertyDto.Create(updatedProperty);
+        await _propertyRepository.SaveChangesAsync();
+        return PropertyDto.Create(property);
     }
 
     public async Task<bool> DeleteProperty(string id)
     {
-        bool isDeleted = await _propertyRepository.Delete(id);
-        if (!isDeleted)
-            throw new AppNotFoundException("Propery not found");
+        var property = await _propertyRepository.GetById(id);
+        if (property == null)
+            throw new AppNotFoundException("Property not found");
+
+        await _propertyRepository.Delete(property);
+        await _propertyRepository.SaveChangesAsync();
         return true;
     }
 
-    public async Task<GameDto?> HandleReservation(string reservationId, States newState)
+    public async Task HandleReservation(string reservationId, string ownerId, States newState)
     {
+        var reservation = await _reservationRepository.GetById(reservationId);
+        if (reservation == null)
+            throw new AppNotFoundException("Reservation not found");
+        if (reservation.Schedule.Property.OwnerId != ownerId)
+            throw new AppUnauthorizedException("Unauthorized");
         if (newState != States.Aceptada && newState != States.Rechazada)
         {
             throw new AppValidationException(
                 "Invalid state. Only 'Aceptada' or 'Rechazada' are allowed."
             );
         }
-        var isUpdated = await _reservationRepository.UpdateReservationState(
-            reservationId,
-            newState
-        );
-        if (isUpdated == false)
-        {
-            throw new AppNotFoundException("Reservation not found.");
-        }
-        var game = await _gameRepository.GetByReservationId(reservationId);
-        if (game == null)
-        {
-            throw new Exception("Error when handling reservation state");
-        }
-        return GameDto.Create(game);
+        reservation.State = newState;
+        await _reservationRepository.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<FieldSchedulesDto>> GetReservationsByPropertyId(

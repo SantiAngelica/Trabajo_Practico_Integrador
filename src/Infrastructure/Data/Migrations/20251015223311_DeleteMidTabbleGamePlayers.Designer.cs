@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015223311_DeleteMidTabbleGamePlayers")]
+    partial class DeleteMidTabbleGamePlayers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
@@ -53,18 +56,6 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<int>("MissingPlayers")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("PropertyAdress")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PropertyName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PropertyZone")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("Schedule")
                         .HasColumnType("INTEGER");
@@ -404,7 +395,8 @@ namespace Infrastructure.Data.Migrations
                 {
                     b.Navigation("Participations");
 
-                    b.Navigation("reservation");
+                    b.Navigation("reservation")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Property", b =>

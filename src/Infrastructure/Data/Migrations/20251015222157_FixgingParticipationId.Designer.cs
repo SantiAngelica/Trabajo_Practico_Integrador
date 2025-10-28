@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015222157_FixgingParticipationId")]
+    partial class FixgingParticipationId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
@@ -53,18 +56,6 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<int>("MissingPlayers")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("PropertyAdress")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PropertyName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PropertyZone")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("Schedule")
                         .HasColumnType("INTEGER");
@@ -277,6 +268,21 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("UserPositions");
                 });
 
+            modelBuilder.Entity("GameUser", b =>
+                {
+                    b.Property<string>("GamesId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("GamesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("GamePlayers", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Field", b =>
                 {
                     b.HasOne("Domain.Entities.Property", "Property")
@@ -400,11 +406,27 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GameUser", b =>
+                {
+                    b.HasOne("Domain.Entities.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GamesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Game", b =>
                 {
                     b.Navigation("Participations");
 
-                    b.Navigation("reservation");
+                    b.Navigation("reservation")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Property", b =>

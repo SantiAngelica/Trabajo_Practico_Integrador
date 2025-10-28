@@ -38,48 +38,44 @@ public class UserService : IUserService
 
     public async Task<bool> DeleteUser(string Id)
     {
-        bool IsDeleted = await _userRepository.Delete(Id);
-        if (!IsDeleted)
-        {
+        var user = await _userRepository.GetById(Id);
+        if (user == null)
             throw new AppNotFoundException("User not found");
-        }
-        ;
+
+        await _userRepository.Delete(user);
+        await _userRepository.SaveChangesAsync();
         return true;
     }
 
     public async Task<bool> UpdateUserRol(string id, RolesEnum newRol)
     {
-        var existingUser = await _userRepository.GetById(id);
-        if (existingUser == null)
-        {
+        var user = await _userRepository.GetById(id);
+        if (user == null)
             throw new AppNotFoundException("User not found");
-        }
-        return await _userRepository.UpdateUserRol(id, newRol);
+        user.Role = newRol;
+        await _userRepository.SaveChangesAsync();
+        return true;
     }
 
     public async Task<UserDto> UpdateUser(string id, RequestUserDto userDto)
     {
         string? isValidUser = UserHelper.IsValidUserData(userDto);
         if (isValidUser != null)
-        {
             throw new AppValidationException(isValidUser);
-        }
-        var updatedUser = await _userRepository.Update(
-            id,
-            new User(
-                userDto.Name,
-                userDto.Email,
-                "",
-                userDto.Age,
-                userDto.Zone,
-                userDto.FieldsType,
-                userDto.Positions
-            )
-        );
-        if (updatedUser == null)
-        {
+
+        var user = await _userRepository.GetById(id);
+        if (user == null)
             throw new AppNotFoundException("User not found");
-        }
-        return UserDto.Create(updatedUser);
+
+        user.Update(
+            userDto.Name,
+            userDto.Email,
+            userDto.Age,
+            userDto.Zone,
+            userDto.FieldsType,
+            userDto.Positions
+        );
+        await _userRepository.SaveChangesAsync();
+        return UserDto.Create(user);
     }
 }

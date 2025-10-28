@@ -28,7 +28,7 @@ public class AuthSecurity : IAuthSecurity
         var claimsForToken = new List<Claim>();
 
         claimsForToken.Add(new Claim("email", user.Email));
-        claimsForToken.Add(new Claim("role", user.Role.ToString()));
+        claimsForToken.Add(new Claim("role", ((int)user.Role).ToString()));
         claimsForToken.Add(new Claim("id", user.Id));
         claimsForToken.Add(new Claim("username", user.Name));
 

@@ -20,6 +20,23 @@ public partial class Property
         this.AddSchedules(schedules);
     }
 
+    public void Update(
+        string name,
+        string adress,
+        string zone,
+        List<int> fields,
+        List<int> schedules
+    )
+    {
+        Name = name;
+        Adress = adress;
+        Zone = zone;
+        this._propertyFields.Clear();
+        this._propertySchedules.Clear();
+        AddFields(fields);
+        AddSchedules(schedules);
+    }
+
     public void AddFields(List<int> fields)
     {
         foreach (var field in fields)

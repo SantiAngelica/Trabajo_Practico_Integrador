@@ -19,15 +19,8 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RequestUserDto user)
     {
-        try
-        {
-            var createdUser = await _authService.Register(user);
-            return Ok(createdUser);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        var createdUser = await _authService.Register(user);
+        return Ok(createdUser);
     }
 
     [HttpPost("login")]

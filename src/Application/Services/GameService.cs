@@ -25,9 +25,10 @@ public class GameService : IGameService
         _reservationRepository = reservationRepository;
     }
 
-    public async Task<IReadOnlyList<Game>> GetAvaialbeGames()
+    public async Task<IReadOnlyList<GameDto>> GetAvaialbeGames()
     {
-        return await _gameRepository.GetAll();
+        var games = await _gameRepository.GetAll();
+        return GameDto.CreateList(games);
     }
 
     public async Task<GameDto?> GetGameById(string id)
@@ -42,6 +43,9 @@ public class GameService : IGameService
 
     public async Task<GameDto?> AddGame(RequestGameDto requestGameDto)
     {
+        var property = await _propertyRepository.GetById(requestGameDto.Property_id);
+        if (property == null)
+            throw new AppNotFoundException("Property not found");
         var schedule = await _propertyRepository.GetScheduleById(requestGameDto.Schedule_id);
         if (schedule == null)
         {
@@ -73,7 +77,10 @@ public class GameService : IGameService
             requestGameDto.Missing_players,
             requestGameDto.Date,
             schedule.StartTime,
-            field.FieldType
+            field.FieldType,
+            property.Name,
+            property.Adress,
+            property.Zone
         );
         Reservation newReservation = new Reservation(
             requestGameDto.Schedule_id,
@@ -84,13 +91,22 @@ public class GameService : IGameService
 
         await _gameRepository.Create(newGame);
         await _reservationRepository.Create(newReservation);
+        await _gameRepository.SaveChangesAsync();
+        await _reservationRepository.SaveChangesAsync();
 
-        return await this.GetGameById(newGame.Id);
+        return GameDto.Create(newGame);
     }
 
-    public async Task<bool> DeleteGame(string id)
+    public async Task<bool> DeleteGame(string id, string uid)
     {
-        return await _gameRepository.Delete(id);
+        var game = await _gameRepository.GetById(id);
+        if (game == null)
+            throw new AppNotFoundException("Game not found");
+        if (game.CreatorId != uid)
+            throw new AppUnauthorizedException("Unauthorized");
+        await _gameRepository.Delete(game);
+        await _gameRepository.SaveChangesAsync();
+        return true;
     }
 
     public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(string propertyId)
@@ -98,9 +114,18 @@ public class GameService : IGameService
         var games = await _gameRepository.GetByPropertyId(propertyId);
         if (games == null)
         {
-            System.Console.WriteLine("NO GAMES");
             throw new AppNotFoundException("No games found for the given property ID");
         }
         return GameDto.CreateList(games);
+    }
+
+    public async Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(string userId)
+    {
+        var games = await _gameRepository.GetByUserCreatorId(userId);
+        if (games == null)
+        {
+            throw new AppNotFoundException("No games found for the given user ID");
+        }
+        return GameWithApplicationsDto.CreateList(games);
     }
 }

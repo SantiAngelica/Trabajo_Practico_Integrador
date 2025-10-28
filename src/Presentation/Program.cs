@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Interfaces;
@@ -8,6 +9,7 @@ using Infrastructure.Data;
 using Infrastructure.Security;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +57,23 @@ builder.Services.AddSwaggerGen(setupAction =>
     );
 });
 
+builder
+    .Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Authentication:Issuer"],
+            ValidAudience = builder.Configuration["Authentication:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"])
+            ),
+        };
+    });
+
 var connection = new SqliteConnection("Data Source=football-finder.db");
 connection.Open();
 
@@ -73,6 +92,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IParticipationRepository, ParticipationRepository>();
 #endregion
 
 #region Services
@@ -84,6 +104,7 @@ builder.Services.Configure<AutenticacionServiceOptions>(
     builder.Configuration.GetSection("AuthenticationService")
 );
 builder.Services.AddScoped<IAuthSecurity, AuthSecurity>();
+builder.Services.AddScoped<IParticipationService, ParticipationService>();
 #endregion
 
 var app = builder.Build();
@@ -95,6 +116,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -9,5 +9,4 @@ public interface IReservationRepository : IRepositoryBase<Reservation>
 
     Task<IReadOnlyList<Reservation?>> GetReservationsByPropertyId(string propertyId, DateOnly date);
 
-    Task<bool> UpdateReservationState(string reservationId, States newState);
 }

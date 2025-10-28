@@ -61,6 +61,26 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
 
             await context.Response.WriteAsync(json);
         }
+        catch (AppUnauthorizedException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+
+            int statusCode = (int)HttpStatusCode.Unauthorized;
+
+            ProblemDetails problem = new()
+            {
+                Status = statusCode,
+                Type = "http://example.com/probs/unauthorized",
+                Title = "Not found",
+                Detail = ex.Message,
+            };
+
+            string json = JsonSerializer.Serialize(problem);
+
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsync(json);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);

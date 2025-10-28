@@ -38,7 +38,6 @@ public record UserDto(
 public record RequestUserDto(
     string Name,
     string Email,
-    string Password,
     int Age,
     string Zone,
     List<int> FieldsType,

@@ -1,13 +1,17 @@
+using System.Security.Claims;
 using Application.Interfaces;
 using Application.Models;
 using Domain.Enum;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Extensions;
 
 namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/users")]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -20,86 +24,41 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
     {
-        try
-        {
-            var users = await _userService.GetUsers();
-            return Ok(users);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        var users = await _userService.GetUsers();
+        return Ok(users);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById(string id)
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetUserById()
     {
-        try
-        {
-            var user = await _userService.GetUserById(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        var id = ValidatorExtension.ValidateRoleAndId(User, "", false, RolesEnum.Player);
+        var user = await _userService.GetUserById(id);
+        return Ok(user);
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "0,2")] //solo superadmin o player
     public async Task<IActionResult> DeleteUser(string id)
     {
-        try
-        {
-            var result = await _userService.DeleteUser(id);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return NoContent();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        ValidatorExtension.ValidateRoleAndId(User, id, false, RolesEnum.SuperAdmin);
+        await _userService.DeleteUser(id);
+        return Ok("User deleted");
     }
 
     [HttpPut("rolechange/{id}/{newRole}")]
+    [Authorize(Roles = "2")] //solo superadmin
     public async Task<IActionResult> UpdateUserRol(string id, RolesEnum newRole)
     {
-        try
-        {
-            bool updatedUser = await _userService.UpdateUserRol(id, newRole);
-            if (updatedUser == false)
-            {
-                return NotFound();
-            }
-            return Ok("User role updated successfully");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        bool updatedUser = await _userService.UpdateUserRol(id, newRole);
+        return Ok("User role updated successfully");
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "0")] //solo player
     public async Task<IActionResult> UpdateUser(string id, RequestUserDto userDto)
     {
-        try
-        {
-            var updatedUser = await _userService.UpdateUser(id, userDto);
-            if (updatedUser == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedUser);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An error occurred while processing your request: {e.Message}");
-        }
+        ValidatorExtension.ValidateRoleAndId(User, id, true, RolesEnum.Player);
+        var updatedUser = await _userService.UpdateUser(id, userDto);
+        return Ok(updatedUser);
     }
 }

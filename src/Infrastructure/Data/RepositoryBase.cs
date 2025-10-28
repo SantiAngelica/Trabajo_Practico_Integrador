@@ -16,18 +16,12 @@ public class RepositoryBase<T> : IRepositoryBase<T>
     public virtual async Task<T?> Create(T entity)
     {
         await _context.Set<T>().AddAsync(entity);
-        await _context.SaveChangesAsync();
         return entity;
     }
 
-    public virtual async Task<bool> Delete(string id)
+    public virtual async Task Delete(T entity)
     {
-        var entity = await GetById(id);
-        if (entity == null)
-            return false;
         _context.Set<T>().Remove(entity);
-        await _context.SaveChangesAsync();
-        return true;
     }
 
     public virtual async Task<IReadOnlyList<T>> GetAll()
@@ -40,14 +34,13 @@ public class RepositoryBase<T> : IRepositoryBase<T>
         return await _context.Set<T>().FindAsync(id);
     }
 
-    public virtual async Task<T?> Update(string id, T entity)
+    public virtual async Task Update(string id, T entity)
     {
-        var existingEntity = await GetById(id);
-        if (existingEntity == null)
-            return null;
-
         _context.Set<T>().Update(entity);
+    }
+
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
-        return existingEntity;
     }
 }

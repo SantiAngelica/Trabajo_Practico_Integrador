@@ -21,6 +21,14 @@ public class ReservationRepository : EfRepository<Reservation>, IReservationRepo
         );
     }
 
+    public override async Task<Reservation?> GetById(string id)
+    {
+        return await _context
+            .Reservations.Include(r => r.Schedule)
+            .ThenInclude(s => s.Property)
+            .FirstOrDefaultAsync(r => r.Id == id);
+    }
+
     public async Task<IReadOnlyList<Reservation?>> GetReservationsByPropertyId(
         string propertyId,
         DateOnly date
@@ -34,22 +42,5 @@ public class ReservationRepository : EfRepository<Reservation>, IReservationRepo
             )
             .AsSplitQuery()
             .ToListAsync();
-    }
-
-    public async Task<bool> UpdateReservationState(string reservationId, States newState)
-    {
-        var reservation = await _context.Reservations.FirstOrDefaultAsync(r =>
-            r.Id == reservationId
-        );
-
-        if (reservation == null)
-        {
-            return false;
-        }
-
-        reservation.State = newState;
-        await _context.SaveChangesAsync();
-
-        return true;
     }
 }

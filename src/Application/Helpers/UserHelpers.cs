@@ -7,7 +7,7 @@ public static class UserHelper
 {
     public static string? IsValidUserData(RequestUserDto requestUser)
     {
-        if (!Regex.IsMatch(requestUser.Password, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        if (!Regex.IsMatch(requestUser.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
         {
             return "Invalid email format.";
         }

@@ -13,4 +13,3 @@ public class Field
         FieldType = fieldType;
     }
 }
-
