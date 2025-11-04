@@ -27,4 +27,10 @@ public class ProvinceController : ControllerBase
     {
         return await provinceClient.GetStringAsync("municipios");
     }
+
+    [HttpGet("living")]
+    public string GetLiving()
+    {
+        return "Living in the city";
+    }
 }
