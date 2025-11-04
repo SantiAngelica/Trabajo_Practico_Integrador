@@ -13,29 +13,27 @@ public class GameRepository : EfRepository<Game>, IGameRepository
     public override async Task<IReadOnlyList<Game>> GetAll()
     {
         return await _context
-            .Games.Include(g => g.reservation)
+            .Games.Include(g => g.Reservation)
             .Where(g =>
                 g.MissingPlayers > 0
                 && g.Date >= DateOnly.FromDateTime(DateTime.Now)
-                && (g.reservation == null || g.reservation.State == States.Aceptada)
+                && (g.Reservation == null || g.Reservation.State == States.Aceptada)
             )
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Game>> GetByPropertyId(string propertyId)
+    public async Task<IReadOnlyList<Game>> GetByPropertyId(int propertyId)
     {
         return await _context
-            .Games.Include(g => g.reservation)
-            .ThenInclude(r => r.Schedule)
+            .Games.Include(g => g.Reservation)
             .Where(g =>
-                g.reservation.Schedule.PropertyId == propertyId
+                g.Reservation.PropertyId == propertyId
                 && g.Date >= DateOnly.FromDateTime(DateTime.Now)
             )
-            .AsSplitQuery()
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Game>> GetByUserCreatorId(string userId)
+    public async Task<IReadOnlyList<Game>> GetByUserCreatorId(int userId)
     {
         return await _context
             .Games.Include(g => g.Participations)

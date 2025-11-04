@@ -10,15 +10,15 @@ public class ParticipationRepository : EfRepository<Participation>, IParticipati
     public ParticipationRepository(ApplicationDbContext dbContext)
         : base(dbContext) { }
 
-    public async Task<List<Participation>> GetByUserId(string userId)
+    public async Task<List<Participation>> GetByUserId(int userId)
     {
         return await _context
-            .Participations.Include(p => p.Game.reservation)
+            .Participations.Include(p => p.Game.Reservation)
             .Where(p => p.Game.Date > DateOnly.FromDateTime(DateTime.Now) && p.UserId == userId)
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Participation>> GetAceptedByUserId(string userId)
+    public async Task<IReadOnlyList<Participation>> GetAceptedByUserId(int userId)
     {
         return await _context
             .Participations.Where(p =>

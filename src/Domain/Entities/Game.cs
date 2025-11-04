@@ -6,8 +6,8 @@ namespace Domain.Entities;
 
 public partial class Game
 {
-    public string Id { get; set; } = null!;
-    public string CreatorId { get; set; } = null!;
+    public int Id { get; set; }
+    public int CreatorId { get; set; }
     public User Creator { get; set; } = null!;
     public int MissingPlayers { get; set; }
     public DateOnly Date { get; set; }
@@ -17,12 +17,12 @@ public partial class Game
     public string PropertyAdress { get; set; }
     public string PropertyZone { get; set; }
 
-    public Reservation? reservation { get; set; }
+    public Reservation? Reservation { get; set; }
     private List<Participation> _gameParticipations = new List<Participation>();
     public IReadOnlyCollection<Participation> Participations => _gameParticipations;
 
     public Game(
-        string creatorId,
+        int creatorId,
         int missingPlayers,
         DateOnly date,
         int schedule,
@@ -32,7 +32,6 @@ public partial class Game
         string propertyZone
     )
     {
-        Id = Guid.NewGuid().ToString();
         CreatorId = creatorId;
         MissingPlayers = missingPlayers;
         Date = date;
@@ -43,15 +42,10 @@ public partial class Game
         PropertyZone = propertyZone;
     }
 
-    public Participation AddParticipation(string userId, string gameId, ParticipationType type)
+    public Participation AddParticipation(int userId, ParticipationType type)
     {
-        Participation newParticipation = new Participation(userId, gameId, type);
+        Participation newParticipation = new Participation(userId, type);
         _gameParticipations.Add(newParticipation);
         return newParticipation;
-    }
-
-    public Participation? GetParticipation(string participationId)
-    {
-        return Participations.FirstOrDefault(p => p.Id == participationId);
     }
 }

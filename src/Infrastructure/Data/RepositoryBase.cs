@@ -29,12 +29,12 @@ public class RepositoryBase<T> : IRepositoryBase<T>
         return await _context.Set<T>().ToListAsync();
     }
 
-    public virtual async Task<T?> GetById(string id)
+    public virtual async Task<T?> GetById(int id)
     {
         return await _context.Set<T>().FindAsync(id);
     }
 
-    public virtual async Task Update(string id, T entity)
+    public virtual async Task Update(int id, T entity)
     {
         _context.Set<T>().Update(entity);
     }

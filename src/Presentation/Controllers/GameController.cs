@@ -26,7 +26,7 @@ public class GameController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetGameById(string id)
+    public async Task<IActionResult> GetGameById(int id)
     {
         var game = await _gameService.GetGameById(id);
         return Ok(game);
@@ -36,19 +36,28 @@ public class GameController : ControllerBase
     [Authorize(Roles = "0")]
     public async Task<IActionResult> CreateGame([FromBody] RequestGameDto requestGameDto)
     {
-        var createdGame = await _gameService.AddGame(requestGameDto);
-        if (createdGame == null)
-        {
-            throw new Exception("Error when creating game");
-        }
+        var userId = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
+        var createdGame = await _gameService.AddGame(requestGameDto, userId);
+
+        return CreatedAtAction(nameof(GetGameById), new { id = createdGame.Id }, createdGame);
+    }
+
+    [HttpPost("external-reservation")]
+    [Authorize(Roles = "0")]
+    public async Task<IActionResult> CreateOnlyGame(
+        [FromBody] RequestGameOnylDto requestGameOnylDto
+    )
+    {
+        var userId = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
+        var createdGame = await _gameService.AddGameOnyl(requestGameOnylDto, userId);
         return CreatedAtAction(nameof(GetGameById), new { id = createdGame.Id }, createdGame);
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "0")]
-    public async Task<IActionResult> DeleteGame(string id)
+    public async Task<IActionResult> DeleteGame(int id)
     {
-        string uid = ValidatorExtension.ValidateRoleAndId(User, "", false, RolesEnum.Player);
+        var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
         var result = await _gameService.DeleteGame(id, uid);
         if (!result)
         {
@@ -59,7 +68,7 @@ public class GameController : ControllerBase
 
     [HttpGet("by-property/{propertyId}")]
     [Authorize(Roles = "1")]
-    public async Task<IActionResult> GetGamesByPropertyId(string propertyId)
+    public async Task<IActionResult> GetGamesByPropertyId(int propertyId)
     {
         var games = await _gameService.GetGamesByPropertyId(propertyId);
         return Ok(games);
@@ -67,7 +76,7 @@ public class GameController : ControllerBase
 
     [HttpGet("by-userCreator/{uid}")]
     [Authorize(Roles = "0")]
-    public async Task<IActionResult> GetGamesByUserCreator(string uid)
+    public async Task<IActionResult> GetGamesByUserCreator(int uid)
     {
         var games = await _gameService.GetGamesByUserCreator(uid);
         return Ok(games);

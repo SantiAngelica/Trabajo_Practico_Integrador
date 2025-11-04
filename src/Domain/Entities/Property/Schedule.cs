@@ -2,14 +2,13 @@ namespace Domain.Entities;
 
 public class Schedule
 {
-    public string Id { get; set; } = null!;
+    public int Id { get; set; }
     public int StartTime { get; set; }
-    public string PropertyId { get; set; } = null!;
+    public int PropertyId { get; set; }
     public Property Property { get; set; } = null!;
 
     public Schedule(int startTime)
     {
-        Id = Guid.NewGuid().ToString();
         StartTime = startTime;
     }
 }

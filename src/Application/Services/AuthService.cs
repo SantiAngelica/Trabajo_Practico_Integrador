@@ -26,7 +26,12 @@ public class AuthService : IAuthService
         {
             throw new AppValidationException("Email is already registered.");
         }
-        string? isValidUser = UserHelper.IsValidUserData(user);
+        string? isValidUser = UserHelper.IsValidUserData(
+            user.Email,
+            user.Age,
+            user.Positions,
+            user.FieldsType
+        );
         if (isValidUser != null)
         {
             throw new AppValidationException(isValidUser);
@@ -41,6 +46,7 @@ public class AuthService : IAuthService
             user.Positions
         );
         var createdUser = await _userRepository.Create(newUser);
+        await _userRepository.SaveChangesAsync();
         if (createdUser == null)
             throw new Exception("Error when creating user");
         return _authSecurity.GeneraToken(createdUser);

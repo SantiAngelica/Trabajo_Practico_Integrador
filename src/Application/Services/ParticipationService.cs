@@ -37,20 +37,17 @@ public class ParticipationService : IParticipationService
         if (game == null)
             throw new AppNotFoundException("Game not found");
 
-        var newParticipation = await _participationRepository.Create(
-            new Participation(
-                participationRequestDto.UserId,
-                participationRequestDto.GameId,
-                participationRequestDto.Type
-            )
+        var newParticipation = game.AddParticipation(
+            participationRequestDto.UserId,
+            participationRequestDto.Type
         );
 
-        if (newParticipation == null)
-            throw new Exception("Fail when adding participation");
+        await _gameRepository.SaveChangesAsync();
+
         return ParticipationDto.Create(newParticipation);
     }
 
-    public async Task<ParticipationsSeparateDto?> GetParticipationsByUserId(string userId)
+    public async Task<ParticipationsSeparateDto?> GetParticipationsByUserId(int userId)
     {
         var participations = await _participationRepository.GetByUserId(userId);
         if (participations == null)
@@ -60,8 +57,8 @@ public class ParticipationService : IParticipationService
     }
 
     public async Task<ParticipationDto?> HandleParticipationState(
-        string id,
-        string recieverId,
+        int id,
+        int recieverId,
         States newState
     )
     {
@@ -86,7 +83,7 @@ public class ParticipationService : IParticipationService
         return ParticipationDto.Create(participation);
     }
 
-    public async Task<ParticipationDto?> GetParticipationById(string Id)
+    public async Task<ParticipationDto?> GetParticipationById(int Id)
     {
         var participation = await _participationRepository.GetById(Id);
         if (participation == null)
@@ -95,9 +92,7 @@ public class ParticipationService : IParticipationService
         return ParticipationDto.Create(participation);
     }
 
-    public async Task<IReadOnlyList<ParticipationDto>> GetAceptedParticipationsByUserId(
-        string userId
-    )
+    public async Task<IReadOnlyList<ParticipationDto>> GetAceptedParticipationsByUserId(int userId)
     {
         var participations = await _participationRepository.GetAceptedByUserId(userId);
         if (participations == null)

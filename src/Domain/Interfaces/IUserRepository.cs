@@ -7,5 +7,5 @@ public interface IUserRepository : IRepositoryBase<User>
 {
     Task<User?> GetByEmail(string email);
 
-    Task<User?> GetWithParticipations(string id);
+    Task<User?> GetWithParticipations(int id);
 }

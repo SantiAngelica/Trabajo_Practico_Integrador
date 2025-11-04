@@ -8,13 +8,15 @@ public interface IPropertyService
 {
     Task<PropertyDto?> CreateProperty(RequestPropertyDto property);
     Task<IReadOnlyList<PropertyDto>> GetProperties();
-    Task<PropertyDto?> GetPropertyById(string id);
-    Task<PropertyDto?> UpdateProperty(string id, RequestPropertyDto updateProperty);
-    Task<bool> DeleteProperty(string id);
-    Task HandleReservation(string reservationId, string ownerId, States newState);
+    Task<PropertyDto?> GetPropertyById(int id);
+    Task<PropertyDto?> UpdateProperty(int id, RequestPropertyDto updateProperty);
+    Task<bool> DeleteProperty(int id);
+    Task HandleReservation(int reservationId, int ownerId, States newState);
 
     Task<IReadOnlyList<FieldSchedulesDto>> GetReservationsByPropertyId(
-        string propertyId,
+        int propertyId,
         DateOnly date
     );
+
+    Task CrossOutSchedule(RequestCrossOut requestCrossOut, int pid, int uid);
 }

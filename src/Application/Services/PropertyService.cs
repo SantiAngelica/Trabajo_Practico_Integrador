@@ -50,7 +50,7 @@ public class PropertyService : IPropertyService
         if (createdProperty == null)
             throw new Exception("Erro when creating property");
         await _propertyRepository.SaveChangesAsync();
-        return PropertyDto.Create(createdProperty);
+        return await this.GetPropertyById(propertyDto.OwnerId);
     }
 
     public async Task<IReadOnlyList<PropertyDto>> GetProperties()
@@ -59,7 +59,7 @@ public class PropertyService : IPropertyService
         return PropertyDto.CreateList(properties);
     }
 
-    public async Task<PropertyDto?> GetPropertyById(string id)
+    public async Task<PropertyDto?> GetPropertyById(int id)
     {
         var property = await _propertyRepository.GetByOwnerId(id);
         if (property == null)
@@ -68,7 +68,7 @@ public class PropertyService : IPropertyService
         return PropertyDto.Create(property);
     }
 
-    public async Task<PropertyDto?> UpdateProperty(string id, RequestPropertyDto updateProperty)
+    public async Task<PropertyDto?> UpdateProperty(int id, RequestPropertyDto updateProperty)
     {
         var property = await _propertyRepository.GetById(id);
         if (property == null)
@@ -92,7 +92,7 @@ public class PropertyService : IPropertyService
         return PropertyDto.Create(property);
     }
 
-    public async Task<bool> DeleteProperty(string id)
+    public async Task<bool> DeleteProperty(int id)
     {
         var property = await _propertyRepository.GetById(id);
         if (property == null)
@@ -103,12 +103,15 @@ public class PropertyService : IPropertyService
         return true;
     }
 
-    public async Task HandleReservation(string reservationId, string ownerId, States newState)
+    public async Task HandleReservation(int reservationId, int ownerId, States newState)
     {
         var reservation = await _reservationRepository.GetById(reservationId);
         if (reservation == null)
             throw new AppNotFoundException("Reservation not found");
-        if (reservation.Schedule.Property.OwnerId != ownerId)
+        var property = await _propertyRepository.GetByOwnerId(ownerId);
+        if (property == null)
+            throw new AppNotFoundException("Property not found");
+        if (reservation.PropertyId != property.Id)
             throw new AppUnauthorizedException("Unauthorized");
         if (newState != States.Aceptada && newState != States.Rechazada)
         {
@@ -121,7 +124,7 @@ public class PropertyService : IPropertyService
     }
 
     public async Task<IReadOnlyList<FieldSchedulesDto>> GetReservationsByPropertyId(
-        string propertyId,
+        int propertyId,
         DateOnly date
     )
     {
@@ -169,5 +172,26 @@ public class PropertyService : IPropertyService
         }
 
         return fieldSchedulesList;
+    }
+
+    public async Task CrossOutSchedule(RequestCrossOut requestCrossOut, int pid, int uid)
+    {
+        var property = await _propertyRepository.GetById(pid);
+        if (property == null)
+            throw new AppNotFoundException("Property not found");
+        if (property.OwnerId != uid)
+            throw new AppUnauthorizedException("Unauthorized");
+
+        foreach (var item in requestCrossOut.ScheduleFields)
+        {
+            property.AddReservation(
+                item.Schedule_Id,
+                item.Field_Id,
+                requestCrossOut.Date,
+                States.Aceptada,
+                null
+            );
+        }
+        await _reservationRepository.SaveChangesAsync();
     }
 }

@@ -31,14 +31,14 @@ public class UserController : ControllerBase
     [HttpGet("profile")]
     public async Task<IActionResult> GetUserById()
     {
-        var id = ValidatorExtension.ValidateRoleAndId(User, "", false, RolesEnum.Player);
+        var id = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
         var user = await _userService.GetUserById(id);
         return Ok(user);
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "0,2")] //solo superadmin o player
-    public async Task<IActionResult> DeleteUser(string id)
+    public async Task<IActionResult> DeleteUser(int id)
     {
         ValidatorExtension.ValidateRoleAndId(User, id, false, RolesEnum.SuperAdmin);
         await _userService.DeleteUser(id);
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
 
     [HttpPut("rolechange/{id}/{newRole}")]
     [Authorize(Roles = "2")] //solo superadmin
-    public async Task<IActionResult> UpdateUserRol(string id, RolesEnum newRole)
+    public async Task<IActionResult> UpdateUserRol(int id, RolesEnum newRole)
     {
         bool updatedUser = await _userService.UpdateUserRol(id, newRole);
         return Ok("User role updated successfully");
@@ -55,7 +55,7 @@ public class UserController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = "0")] //solo player
-    public async Task<IActionResult> UpdateUser(string id, RequestUserDto userDto)
+    public async Task<IActionResult> UpdateUser(int id, UpdateUserDto userDto)
     {
         ValidatorExtension.ValidateRoleAndId(User, id, true, RolesEnum.Player);
         var updatedUser = await _userService.UpdateUser(id, userDto);

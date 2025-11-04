@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Application.Models;
 using Core.Exceptions;
 using Domain.Entities;
+using Domain.Enum;
 using Domain.Interfaces;
 
 namespace Application.Services;
@@ -31,7 +32,7 @@ public class GameService : IGameService
         return GameDto.CreateList(games);
     }
 
-    public async Task<GameDto?> GetGameById(string id)
+    public async Task<GameDto?> GetGameById(int id)
     {
         var game = await _gameRepository.GetById(id);
         if (game == null)
@@ -41,63 +42,74 @@ public class GameService : IGameService
         return GameDto.Create(game);
     }
 
-    public async Task<GameDto?> AddGame(RequestGameDto requestGameDto)
+    public async Task<GameDto?> AddGame(RequestGameDto requestGameDto, int uid)
     {
         var property = await _propertyRepository.GetById(requestGameDto.Property_id);
         if (property == null)
             throw new AppNotFoundException("Property not found");
-        var schedule = await _propertyRepository.GetScheduleById(requestGameDto.Schedule_id);
-        if (schedule == null)
-        {
-            throw new AppNotFoundException("Schedule not found");
-        }
-        var field = await _propertyRepository.GetFieldById(requestGameDto.Field_id);
-        if (field == null)
-        {
-            throw new AppNotFoundException("Field not found");
-        }
-        var existingReservation = await _reservationRepository.GetExistingReservation(
-            requestGameDto.Date,
-            requestGameDto.Field_id,
-            requestGameDto.Schedule_id
-        );
-        if (existingReservation != null)
-        {
-            throw new AppValidationException(
-                "Field is already booked for the selected date and time"
-            );
-        }
+
         bool IsInAWeek = GameHelper.IsInAWeek(requestGameDto.Date);
         if (!IsInAWeek)
         {
             throw new AppValidationException("You can only book a game within a week from today");
         }
+        var field = property.GetField(requestGameDto.Field_id);
+        var sch = property.GetSchedule(requestGameDto.Schedule_id);
         Game newGame = new Game(
-            requestGameDto.Creator_id,
+            uid,
             requestGameDto.Missing_players,
             requestGameDto.Date,
-            schedule.StartTime,
-            field.FieldType,
+            sch,
+            field,
             property.Name,
             property.Adress,
             property.Zone
         );
-        Reservation newReservation = new Reservation(
+        await _gameRepository.Create(newGame);
+
+        await _gameRepository.SaveChangesAsync();
+
+        property.AddReservation(
             requestGameDto.Schedule_id,
-            newGame.Id,
             requestGameDto.Field_id,
-            requestGameDto.Date
+            requestGameDto.Date,
+            States.Pendiente,
+            newGame.Id
+        );
+
+        await _reservationRepository.SaveChangesAsync();
+
+        return await this.GetGameById(newGame.Id);
+    }
+
+    public async Task<GameDto?> AddGameOnyl(RequestGameOnylDto requestGameOnylDto, int uid)
+    {
+        GameHelper.ValidateFieldAndSchedulue(
+            requestGameOnylDto.FieldType,
+            requestGameOnylDto.Schedule
+        );
+
+        if (!GameHelper.IsInAWeek(requestGameOnylDto.Date))
+            throw new AppValidationException("You can only book a game within a week from today");
+
+        Game newGame = new Game(
+            uid,
+            requestGameOnylDto.Missing_players,
+            requestGameOnylDto.Date,
+            requestGameOnylDto.Schedule,
+            requestGameOnylDto.FieldType,
+            requestGameOnylDto.PropertyName,
+            requestGameOnylDto.PropertyAdress,
+            requestGameOnylDto.PropertyZone
         );
 
         await _gameRepository.Create(newGame);
-        await _reservationRepository.Create(newReservation);
         await _gameRepository.SaveChangesAsync();
-        await _reservationRepository.SaveChangesAsync();
 
-        return GameDto.Create(newGame);
+        return await this.GetGameById(newGame.Id);
     }
 
-    public async Task<bool> DeleteGame(string id, string uid)
+    public async Task<bool> DeleteGame(int id, int uid)
     {
         var game = await _gameRepository.GetById(id);
         if (game == null)
@@ -109,7 +121,7 @@ public class GameService : IGameService
         return true;
     }
 
-    public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(string propertyId)
+    public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId)
     {
         var games = await _gameRepository.GetByPropertyId(propertyId);
         if (games == null)
@@ -119,7 +131,7 @@ public class GameService : IGameService
         return GameDto.CreateList(games);
     }
 
-    public async Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(string userId)
+    public async Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(int userId)
     {
         var games = await _gameRepository.GetByUserCreatorId(userId);
         if (games == null)

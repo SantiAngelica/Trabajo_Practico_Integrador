@@ -6,28 +6,28 @@ namespace Domain.Entities;
 
 public partial class Reservation
 {
-    public string Id { get; set; }
+    public int Id { get; set; }
 
-    public string ScheduleId { get; set; } = null!;
-    public Schedule Schedule { get; set; } = null!;
+    public int ScheduleId { get; set; }
 
-    public string GameId { get; set; } = null!;
-    public Game Game { get; set; } = null!;
+    public int? GameId { get; set; } = null!;
 
-    public string FieldId { get; set; } = null!;
-    public Field Field { get; set; } = null!;
+    public Game? Game { get; set; }
+
+    public int FieldId { get; set; }
+
+    public int PropertyId { get; set; }
 
     public DateOnly Date { get; set; }
 
     public States State { get; set; }
 
-    public Reservation(string scheduleId, string gameId, string fieldId, DateOnly date)
+    public Reservation(int scheduleId, int? gameId, int fieldId, DateOnly date, States state)
     {
-        Id = Guid.NewGuid().ToString();
         ScheduleId = scheduleId;
-        GameId = gameId;
+        GameId = gameId == null ? null : gameId;
         FieldId = fieldId;
         Date = date;
-        State = States.Pendiente;
+        State = state;
     }
 }

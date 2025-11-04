@@ -14,7 +14,6 @@ public partial class User
         List<string> Positions
     )
     {
-        Id = Guid.NewGuid().ToString();
         Name = name;
         Email = email;
         Password = password;

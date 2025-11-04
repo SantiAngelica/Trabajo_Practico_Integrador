@@ -5,7 +5,7 @@ using Domain.Enum;
 namespace Application.Models;
 
 public record UserDto(
-    string Id,
+    int Id,
     string Name,
     string Email,
     int Age,
@@ -35,13 +35,4 @@ public record UserDto(
     }
 }
 
-public record RequestUserDto(
-    string Name,
-    string Email,
-    int Age,
-    string Zone,
-    List<int> FieldsType,
-    List<string> Positions
-);
 
-public record LoginRequestUserDto(string Email, string Password);

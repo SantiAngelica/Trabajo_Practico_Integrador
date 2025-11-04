@@ -19,7 +19,7 @@ public class UserRepository : EfRepository<User>, IUserRepository
             .ToListAsync();
     }
 
-    public override async Task<User?> GetById(string Id)
+    public override async Task<User?> GetById(int Id)
     {
         return await _context
             .Users.Include(u => u.UserFields)
@@ -33,7 +33,7 @@ public class UserRepository : EfRepository<User>, IUserRepository
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<User?> GetWithParticipations(string id)
+    public async Task<User?> GetWithParticipations(int id)
     {
         return await _context
             .Users.Include(u => u.Participations)

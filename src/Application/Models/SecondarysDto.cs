@@ -1,7 +1,9 @@
 namespace Application.Models;
 
-public record FieldDto(string Id, int Field);
+public record FieldDto(int Id, int Field);
 
-public record PositionDto(string Id, string Position);
+public record PositionDto(int Id, string Position);
 
-public record ScheduleDto(string Id, int Schedule);
+public record ScheduleDto(int Id, int Schedule);
+
+public record ScheduleField(int Schedule_Id, int Field_Id);

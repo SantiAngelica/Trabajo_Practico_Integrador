@@ -5,13 +5,18 @@ namespace Application.Helpers;
 
 public static class UserHelper
 {
-    public static string? IsValidUserData(RequestUserDto requestUser)
+    public static string? IsValidUserData(
+        string Email,
+        int Age,
+        List<string> Positions,
+        List<int> FieldsType
+    )
     {
-        if (!Regex.IsMatch(requestUser.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        if (!Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
         {
             return "Invalid email format.";
         }
-        if (requestUser.Age < 12 || requestUser.Age > 110)
+        if (Age < 12 || Age > 110)
         {
             return "Age must be between 12 and 110.";
         }
@@ -22,12 +27,12 @@ public static class UserHelper
             "mediocampista",
             "delantero",
         };
-        if (!requestUser.Positions.All(p => validPositions.Contains(p.ToLower())))
+        if (!Positions.All(p => validPositions.Contains(p.ToLower())))
         {
             return "One or more positions are invalid.";
         }
         var validFieldTypes = new List<int> { 5, 6, 7, 9, 8, 11 };
-        if (!requestUser.FieldsType.All(ft => validFieldTypes.Contains(ft)))
+        if (!FieldsType.All(ft => validFieldTypes.Contains(ft)))
         {
             return "One or more field types are invalid.";
         }

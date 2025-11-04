@@ -29,7 +29,7 @@ public class AuthSecurity : IAuthSecurity
 
         claimsForToken.Add(new Claim("email", user.Email));
         claimsForToken.Add(new Claim("role", ((int)user.Role).ToString()));
-        claimsForToken.Add(new Claim("id", user.Id));
+        claimsForToken.Add(new Claim("id", user.Id.ToString()));
         claimsForToken.Add(new Claim("username", user.Name));
 
         var jwtSecurityToken = new JwtSecurityToken(
@@ -49,7 +49,7 @@ public class AuthSecurity : IAuthSecurity
 
 public class AutenticacionServiceOptions
 {
-    public const string AutenticacionService = "AutenticacionService";
+    public const string AutenticacionService = "Authentication";
 
     public string Issuer { get; set; }
     public string Audience { get; set; }

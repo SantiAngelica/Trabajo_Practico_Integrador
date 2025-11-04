@@ -4,6 +4,6 @@ namespace Domain.Interfaces;
 
 public interface IGameRepository : IRepositoryBase<Game>
 {
-    Task<IReadOnlyList<Game>> GetByPropertyId(string propertyId);
-    Task<IReadOnlyList<Game>> GetByUserCreatorId(string userId);
+    Task<IReadOnlyList<Game>> GetByPropertyId(int propertyId);
+    Task<IReadOnlyList<Game>> GetByUserCreatorId(int userId);
 }

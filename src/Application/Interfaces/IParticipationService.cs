@@ -7,10 +7,10 @@ namespace Application.Interfaces;
 public interface IParticipationService
 {
     Task<ParticipationDto?> AddParticipation(ParticipationRequestDto participationRequestDto);
-    Task<ParticipationsSeparateDto?> GetParticipationsByUserId(string userId);
-    Task<ParticipationDto?> HandleParticipationState(string Id, string recieverId, States newState);
+    Task<ParticipationsSeparateDto?> GetParticipationsByUserId(int userId);
+    Task<ParticipationDto?> HandleParticipationState(int Id, int recieverId, States newState);
 
-    Task<ParticipationDto?> GetParticipationById(string Id);
+    Task<ParticipationDto?> GetParticipationById(int Id);
 
-    Task<IReadOnlyList<ParticipationDto>> GetAceptedParticipationsByUserId(string userId);
+    Task<IReadOnlyList<ParticipationDto>> GetAceptedParticipationsByUserId(int userId);
 }

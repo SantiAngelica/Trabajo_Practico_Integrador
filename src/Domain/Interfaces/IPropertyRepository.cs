@@ -5,11 +5,11 @@ namespace Domain.Interfaces;
 
 public interface IPropertyRepository : IRepositoryBase<Property>
 {
-    Task<Property?> GetByOwnerId(string id);
-    Task<Schedule?> GetScheduleById(string scheduleId);
-    Task<Field?> GetFieldById(string fieldId);
+    Task<Property?> GetByOwnerId(int id);
+    Task<Schedule?> GetScheduleById(int scheduleId);
+    Task<Field?> GetFieldById(int fieldId);
 
-    Task<IReadOnlyList<Schedule?>> GetSchedulesByPropertyId(string propertyId);
+    Task<IReadOnlyList<Schedule?>> GetSchedulesByPropertyId(int propertyId);
 
-    Task<IReadOnlyList<Field?>> GetFieldsByPropertyId(string propertyId);
+    Task<IReadOnlyList<Field?>> GetFieldsByPropertyId(int propertyId);
 }

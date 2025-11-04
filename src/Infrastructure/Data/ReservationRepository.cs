@@ -12,8 +12,8 @@ public class ReservationRepository : EfRepository<Reservation>, IReservationRepo
 
     public async Task<Reservation?> GetExistingReservation(
         DateOnly date,
-        string fieldId,
-        string scheduleId
+        int fieldId,
+        int scheduleId
     )
     {
         return await _context.Reservations.FirstOrDefaultAsync(r =>
@@ -21,24 +21,19 @@ public class ReservationRepository : EfRepository<Reservation>, IReservationRepo
         );
     }
 
-    public override async Task<Reservation?> GetById(string id)
+    public override async Task<Reservation?> GetById(int id)
     {
-        return await _context
-            .Reservations.Include(r => r.Schedule)
-            .ThenInclude(s => s.Property)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        return await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<IReadOnlyList<Reservation?>> GetReservationsByPropertyId(
-        string propertyId,
+        int propertyId,
         DateOnly date
     )
     {
         return await _context
-            .Reservations.Include(r => r.Field)
-            .Include(r => r.Schedule)
-            .Where(r =>
-                r.Schedule.PropertyId == propertyId && r.State == States.Aceptada && r.Date == date
+            .Reservations.Where(r =>
+                r.PropertyId == propertyId && r.State == States.Aceptada && r.Date == date
             )
             .AsSplitQuery()
             .ToListAsync();

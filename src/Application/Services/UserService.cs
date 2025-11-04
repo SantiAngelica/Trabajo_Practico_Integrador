@@ -25,7 +25,7 @@ public class UserService : IUserService
         return UserDto.CreateList(users);
     }
 
-    public async Task<UserDto?> GetUserById(string Id)
+    public async Task<UserDto?> GetUserById(int Id)
     {
         var user = await _userRepository.GetById(Id);
         if (user == null)
@@ -36,7 +36,7 @@ public class UserService : IUserService
         return UserDto.Create(user);
     }
 
-    public async Task<bool> DeleteUser(string Id)
+    public async Task<bool> DeleteUser(int Id)
     {
         var user = await _userRepository.GetById(Id);
         if (user == null)
@@ -47,7 +47,7 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<bool> UpdateUserRol(string id, RolesEnum newRol)
+    public async Task<bool> UpdateUserRol(int id, RolesEnum newRol)
     {
         var user = await _userRepository.GetById(id);
         if (user == null)
@@ -57,9 +57,14 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<UserDto> UpdateUser(string id, RequestUserDto userDto)
+    public async Task<UserDto> UpdateUser(int id, UpdateUserDto userDto)
     {
-        string? isValidUser = UserHelper.IsValidUserData(userDto);
+        string? isValidUser = UserHelper.IsValidUserData(
+            userDto.Email,
+            userDto.Age,
+            userDto.Positions,
+            userDto.FieldsType
+        );
         if (isValidUser != null)
             throw new AppValidationException(isValidUser);
 

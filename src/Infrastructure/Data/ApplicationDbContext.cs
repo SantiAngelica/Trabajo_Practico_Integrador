@@ -37,6 +37,27 @@ public partial class ApplicationDbContext : DbContext
             .HasForeignKey(g => g.CreatorId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder
+            .Entity<Game>()
+            .HasOne(g => g.Reservation)
+            .WithOne(r => r.Game)
+            .HasForeignKey<Reservation>(r => r.GameId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<UserComent>()
+            .HasOne(uc => uc.User)
+            .WithMany(u => u.UserComents)
+            .HasForeignKey(uc => uc.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder
+            .Entity<UserComent>()
+            .HasOne(uc => uc.Commenter)
+            .WithMany()
+            .HasForeignKey(uc => uc.CommenterId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<Game>().Navigation(g => g.Creator).AutoInclude();
 
         modelBuilder.Entity<Participation>().Navigation(p => p.Game).AutoInclude();
@@ -45,5 +66,6 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.Entity<Property>().Navigation(p => p.Fields).AutoInclude();
         modelBuilder.Entity<Property>().Navigation(p => p.Schedules).AutoInclude();
         modelBuilder.Entity<Property>().Navigation(p => p.Owner).AutoInclude();
+        modelBuilder.Entity<Property>().Navigation(p => p.Reservations).AutoInclude();
     }
 }

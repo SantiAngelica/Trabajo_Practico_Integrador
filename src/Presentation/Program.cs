@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -57,6 +58,8 @@ builder.Services.AddSwaggerGen(setupAction =>
     );
 });
 
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
 builder
     .Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
@@ -101,11 +104,19 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPropertyService, PropertyService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.Configure<AutenticacionServiceOptions>(
-    builder.Configuration.GetSection("AuthenticationService")
+    builder.Configuration.GetSection("Authentication")
 );
 builder.Services.AddScoped<IAuthSecurity, AuthSecurity>();
 builder.Services.AddScoped<IParticipationService, ParticipationService>();
 #endregion
+
+builder.Services.AddHttpClient(
+    "ProvinceHttpCLient",
+    client =>
+    {
+        client.BaseAddress = new Uri("https://apis.datos.gob.ar/georef/api/");
+    }
+);
 
 var app = builder.Build();
 

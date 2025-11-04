@@ -39,7 +39,7 @@ public class PropertyController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetPropertyByOwnerId(string id)
+    public async Task<IActionResult> GetPropertyByOwnerId(int id)
     {
         var property = await _propertyService.GetPropertyById(id);
         if (property == null)
@@ -52,7 +52,7 @@ public class PropertyController : ControllerBase
     [HttpPut("{id}")]
     [Authorize(Roles = "1")] //solo admin
     public async Task<IActionResult> UpdateProperty(
-        string id,
+        int id,
         [FromBody] RequestPropertyDto updatePropertyDto
     )
     {
@@ -72,7 +72,7 @@ public class PropertyController : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "1")]
-    public async Task<IActionResult> DeleteProperty(string id)
+    public async Task<IActionResult> DeleteProperty(int id)
     {
         ValidatorExtension.ValidateRoleAndId(User, id, true, RolesEnum.Admin);
         var deleted = await _propertyService.DeleteProperty(id);
@@ -85,20 +85,32 @@ public class PropertyController : ControllerBase
 
     [HttpPost("{rid}/acepted")]
     [Authorize(Roles = "1")]
-    public async Task<IActionResult> HandleReservation(string rid, [FromQuery] States state)
+    public async Task<IActionResult> HandleReservation(int rid, [FromQuery] States state)
     {
-        string? uid = User.FindFirst("id")?.Value;
+        var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Admin);
         await _propertyService.HandleReservation(rid, uid, state);
         return Ok();
     }
 
     [HttpGet("property-schedules")]
     public async Task<IActionResult> GetReservationsByPropertyId(
-        [FromQuery] string propertyId,
+        [FromQuery] int propertyId,
         [FromQuery] DateOnly date
     )
     {
         var reservations = await _propertyService.GetReservationsByPropertyId(propertyId, date);
         return Ok(reservations);
+    }
+
+    [HttpPut("crossout-schedule/{propertyId}")]
+    [Authorize(Roles = "1")]
+    public async Task<IActionResult> CrossOutSchedule(
+        int propertyId,
+        [FromBody] RequestCrossOut requestCrossOut
+    )
+    {
+        var userId = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Admin);
+        await _propertyService.CrossOutSchedule(requestCrossOut, propertyId, userId);
+        return await this.GetReservationsByPropertyId(propertyId, requestCrossOut.Date);
     }
 }

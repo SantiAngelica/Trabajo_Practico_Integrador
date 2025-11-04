@@ -4,7 +4,7 @@ namespace Domain.Interfaces;
 
 public interface IParticipationRepository : IRepositoryBase<Participation>
 {
-    Task<List<Participation>> GetByUserId(string userId);
+    Task<List<Participation>> GetByUserId(int userId);
 
-    Task<IReadOnlyList<Participation>> GetAceptedByUserId(string userId);
+    Task<IReadOnlyList<Participation>> GetAceptedByUserId(int userId);
 }

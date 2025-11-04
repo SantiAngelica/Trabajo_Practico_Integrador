@@ -7,13 +7,15 @@ public interface IGameService
 {
     Task<IReadOnlyList<GameDto>> GetAvaialbeGames();
 
-    Task<GameDto?> GetGameById(string id);
+    Task<GameDto?> GetGameById(int id);
 
-    Task<GameDto?> AddGame(RequestGameDto requestGameDto);
+    Task<GameDto?> AddGame(RequestGameDto requestGameDto, int uid);
 
-    Task<bool> DeleteGame(string id, string uid);
+    Task<GameDto?> AddGameOnyl(RequestGameOnylDto requestGameOnylDto, int uid);
 
-    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(string propertyId);
+    Task<bool> DeleteGame(int id, int uid);
 
-    Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(string userId);
+    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId);
+
+    Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(int userId);
 }

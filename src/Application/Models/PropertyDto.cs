@@ -3,7 +3,7 @@ using Domain.Entities;
 namespace Application.Models;
 
 public record PropertyDto(
-    string Id,
+    int Id,
     string Name,
     string Address,
     string Zone,
@@ -36,13 +36,4 @@ public record PropertyDto(
     }
 }
 
-public record OwnerDto(string Id, string Name, string Email, int Age);
-
-public record RequestPropertyDto(
-    string Name,
-    string Address,
-    string Zone,
-    string OwnerId,
-    List<int> FieldsType,
-    List<int> Schedules
-);
+public record OwnerDto(int Id, string Name, string Email, int Age);

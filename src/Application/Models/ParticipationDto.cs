@@ -3,10 +3,8 @@ using Domain.Enum;
 
 namespace Application.Models;
 
-public record ParticipationRequestDto(string GameId, string UserId, ParticipationType Type);
-
 public record ParticipationDto(
-    string Id,
+    int Id,
     UserDto User,
     GameDto Game,
     ParticipationType Type,

@@ -7,32 +7,33 @@ namespace Presentation.Extensions;
 
 public static class ValidatorExtension
 {
-    public static string ValidateRoleAndId(
+    public static int ValidateRoleAndId(
         ClaimsPrincipal user,
-        string requiredId,
+        int? requiredId,
         bool onlyId,
         RolesEnum requiredRole
     )
     {
         var userId = user.FindFirst("id")?.Value;
-        var userRole = user.FindFirst("role")?.Value;
+        var userRole = user.FindFirst(ClaimTypes.Role)?.Value;
 
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userRole))
             throw new AppValidationException("Missing data in token");
 
         RolesEnum userRoleType = (RolesEnum)int.Parse(userRole);
+        int userIdInt = int.Parse(userId);
 
         bool hasRole = userRoleType >= requiredRole;
-        bool hasId = userId == requiredId;
+        bool hasId = userIdInt == requiredId;
 
         if (onlyId && hasId)
         {
-            return userId;
+            return userIdInt;
         }
 
         if (hasRole || hasId)
         {
-            return userId;
+            return userIdInt;
         }
 
         throw new AppValidationException("Unautorized");
