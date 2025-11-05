@@ -103,9 +103,9 @@ public class PropertyService : IPropertyService
         return true;
     }
 
-    public async Task HandleReservation(int reservationId, int ownerId, States newState)
+    public async Task HandleReservation(int gameId, int ownerId, States newState)
     {
-        var reservation = await _reservationRepository.GetById(reservationId);
+        var reservation = await _reservationRepository.GetReservationByGameId(gameId);
         if (reservation == null)
             throw new AppNotFoundException("Reservation not found");
         var property = await _propertyRepository.GetByOwnerId(ownerId);

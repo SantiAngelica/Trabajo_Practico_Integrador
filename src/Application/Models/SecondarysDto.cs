@@ -7,3 +7,4 @@ public record PositionDto(int Id, string Position);
 public record ScheduleDto(int Id, int Schedule);
 
 public record ScheduleField(int Schedule_Id, int Field_Id);
+

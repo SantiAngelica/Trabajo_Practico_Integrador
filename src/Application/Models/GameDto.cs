@@ -51,6 +51,7 @@ public record GameWithApplicationsDto(
     DateOnly Date,
     int Missing_players,
     List<ParticipationDto> Applications,
+    List<ShortUserDto> Players,
     string PropertyName,
     string PropertyAdress,
     string PropertyZone
@@ -64,8 +65,13 @@ public record GameWithApplicationsDto(
             game.FieldType,
             game.Date,
             game.MissingPlayers,
-            game.Participations.Where(p => p.Type == ParticipationType.Postulacion)
+            game.Participations.Where(p =>
+                    p.Type == ParticipationType.Postulacion && p.State == States.Pendiente
+                )
                 .Select(ParticipationDto.Create)
+                .ToList(),
+            game.Participations.Where(p => p.State == States.Aceptada)
+                .Select(p => ShortUserDto.Create(p.User))
                 .ToList(),
             game.PropertyName,
             game.PropertyAdress,

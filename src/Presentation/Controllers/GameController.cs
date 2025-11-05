@@ -68,9 +68,12 @@ public class GameController : ControllerBase
 
     [HttpGet("by-property/{propertyId}")]
     [Authorize(Roles = "1")]
-    public async Task<IActionResult> GetGamesByPropertyId(int propertyId)
+    public async Task<IActionResult> GetGamesByPropertyId(
+        int propertyId,
+        States reservationState = States.Pendiente
+    )
     {
-        var games = await _gameService.GetGamesByPropertyId(propertyId);
+        var games = await _gameService.GetGamesByPropertyId(propertyId, reservationState);
         return Ok(games);
     }
 

@@ -22,13 +22,14 @@ public class GameRepository : EfRepository<Game>, IGameRepository
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Game>> GetByPropertyId(int propertyId)
+    public async Task<IReadOnlyList<Game>> GetByPropertyId(int propertyId, States reservationState)
     {
         return await _context
             .Games.Include(g => g.Reservation)
             .Where(g =>
                 g.Reservation.PropertyId == propertyId
                 && g.Date >= DateOnly.FromDateTime(DateTime.Now)
+                && (g.Reservation.State == reservationState)
             )
             .ToListAsync();
     }

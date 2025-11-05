@@ -75,12 +75,12 @@ public partial class ApplicationDbContext : DbContext
                 new User
                 {
                     Id = 1,
-                    Name = "Admin",
-                    Email = "admin@example.com",
+                    Name = "muñeco",
+                    Email = "muñeco@example.com",
                     Password = "1234", // 🔒 Solo para pruebas
                     Age = 30,
                     Zone = "Centro",
-                    Role = RolesEnum.SuperAdmin,
+                    Role = RolesEnum.Player,
                 },
                 new User
                 {
@@ -95,8 +95,8 @@ public partial class ApplicationDbContext : DbContext
                 new User
                 {
                     Id = 3,
-                    Name = "María López",
-                    Email = "maria@example.com",
+                    Name = "Adiur",
+                    Email = "adiur@example.com",
                     Password = "1234",
                     Age = 28,
                     Zone = "Sur",

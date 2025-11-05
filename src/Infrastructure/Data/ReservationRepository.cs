@@ -21,9 +21,9 @@ public class ReservationRepository : EfRepository<Reservation>, IReservationRepo
         );
     }
 
-    public override async Task<Reservation?> GetById(int id)
+    public async Task<Reservation?> GetReservationByGameId(int gameId)
     {
-        return await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
+        return await _context.Reservations.FirstOrDefaultAsync(r => r.GameId == gameId);
     }
 
     public async Task<IReadOnlyList<Reservation?>> GetReservationsByPropertyId(

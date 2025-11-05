@@ -1,5 +1,6 @@
 using Application.Models;
 using Domain.Entities;
+using Domain.Enum;
 
 namespace Application.Interfaces;
 
@@ -15,7 +16,7 @@ public interface IGameService
 
     Task<bool> DeleteGame(int id, int uid);
 
-    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId);
+    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId, States reservationState);
 
     Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(int userId);
 }

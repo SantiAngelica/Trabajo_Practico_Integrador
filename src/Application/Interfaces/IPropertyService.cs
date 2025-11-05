@@ -11,7 +11,7 @@ public interface IPropertyService
     Task<PropertyDto?> GetPropertyById(int id);
     Task<PropertyDto?> UpdateProperty(int id, RequestPropertyDto updateProperty);
     Task<bool> DeleteProperty(int id);
-    Task HandleReservation(int reservationId, int ownerId, States newState);
+    Task HandleReservation(int gameId, int ownerId, States newState);
 
     Task<IReadOnlyList<FieldSchedulesDto>> GetReservationsByPropertyId(
         int propertyId,

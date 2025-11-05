@@ -79,7 +79,8 @@ public class GameService : IGameService
 
         await _reservationRepository.SaveChangesAsync();
 
-        return await this.GetGameById(newGame.Id);
+        var gameCreated = await _gameRepository.GetById(newGame.Id);
+        return GameDto.Create(gameCreated);
     }
 
     public async Task<GameDto?> AddGameOnyl(RequestGameOnylDto requestGameOnylDto, int uid)
@@ -121,9 +122,9 @@ public class GameService : IGameService
         return true;
     }
 
-    public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId)
+    public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId, States reservationState)
     {
-        var games = await _gameRepository.GetByPropertyId(propertyId);
+        var games = await _gameRepository.GetByPropertyId(propertyId, reservationState);
         if (games == null)
         {
             throw new AppNotFoundException("No games found for the given property ID");

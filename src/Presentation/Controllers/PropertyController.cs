@@ -83,12 +83,12 @@ public class PropertyController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{rid}/acepted")]
+    [HttpPost("{gid}/acepted")]
     [Authorize(Roles = "1")]
-    public async Task<IActionResult> HandleReservation(int rid, [FromQuery] States state)
+    public async Task<IActionResult> HandleReservation(int gid, [FromQuery] States state)
     {
         var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Admin);
-        await _propertyService.HandleReservation(rid, uid, state);
+        await _propertyService.HandleReservation(gid, uid, state);
         return Ok();
     }
 

@@ -35,4 +35,13 @@ public record UserDto(
     }
 }
 
+public record ShortUserDto(int Id, string Name, string Email, int Age, RolesEnum Role, string Zone)
+{
+    public static ShortUserDto Create(User user) =>
+        new ShortUserDto(user.Id, user.Name, user.Email, user.Age, user.Role, user.Zone);
 
+    public static IReadOnlyList<ShortUserDto> CreateList(IReadOnlyList<User> users)
+    {
+        return users.Select(Create).ToList();
+    }
+}
