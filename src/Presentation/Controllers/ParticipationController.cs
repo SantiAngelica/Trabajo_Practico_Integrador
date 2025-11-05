@@ -5,7 +5,6 @@ using Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Extensions;
-using SQLitePCL;
 
 namespace Presentation.Controllers;
 

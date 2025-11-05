@@ -485,3 +485,7 @@ $RECYCLE.BIN/
 
 #db
 *.db
+
+#appsettings
+appsettings*.json
+appsettings*.Development.json

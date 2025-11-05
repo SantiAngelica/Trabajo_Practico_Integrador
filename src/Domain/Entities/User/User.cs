@@ -29,5 +29,5 @@ public partial class User
     private List<Participation> _participations = new List<Participation>();
     public IReadOnlyCollection<Participation> Participations => _participations;
 
-    private User() { }
+    public User() { }
 }

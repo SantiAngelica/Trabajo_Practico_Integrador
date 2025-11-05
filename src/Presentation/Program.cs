@@ -8,7 +8,6 @@ using Application.Services;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Security;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -76,18 +75,9 @@ builder
             ),
         };
     });
-
-var connection = new SqliteConnection("Data Source=football-finder.db");
-connection.Open();
-
-using (var comman = connection.CreateCommand())
-{
-    comman.CommandText = "PRAGMA jorunal_mode = DELETE;";
-    comman.ExecuteNonQuery();
-}
 builder.Services.AddDbContext<ApplicationDbContext>(DbContextOptions =>
 {
-    DbContextOptions.UseSqlite(connection);
+    DbContextOptions.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection"));
 });
 
 #region Repositories
@@ -131,7 +121,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-
 app.MapControllers();
 
 app.Run();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Domain.Entities;
+using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -67,5 +68,40 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.Entity<Property>().Navigation(p => p.Schedules).AutoInclude();
         modelBuilder.Entity<Property>().Navigation(p => p.Owner).AutoInclude();
         modelBuilder.Entity<Property>().Navigation(p => p.Reservations).AutoInclude();
+
+        modelBuilder
+            .Entity<User>()
+            .HasData(
+                new User
+                {
+                    Id = 1,
+                    Name = "Admin",
+                    Email = "admin@example.com",
+                    Password = "1234", // 🔒 Solo para pruebas
+                    Age = 30,
+                    Zone = "Centro",
+                    Role = RolesEnum.SuperAdmin,
+                },
+                new User
+                {
+                    Id = 2,
+                    Name = "Juan Pérez",
+                    Email = "juan@example.com",
+                    Password = "1234",
+                    Age = 25,
+                    Zone = "Norte",
+                    Role = RolesEnum.Player,
+                },
+                new User
+                {
+                    Id = 3,
+                    Name = "María López",
+                    Email = "maria@example.com",
+                    Password = "1234",
+                    Age = 28,
+                    Zone = "Sur",
+                    Role = RolesEnum.Admin,
+                }
+            );
     }
 }
