@@ -75,6 +75,7 @@ builder
             ),
         };
     });
+
 builder.Services.AddDbContext<ApplicationDbContext>(DbContextOptions =>
 {
     DbContextOptions.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection"));
@@ -117,10 +118,13 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.MapControllers();
+
+app.MapGet("/", () => "API corriendo");
 
 app.Run();
