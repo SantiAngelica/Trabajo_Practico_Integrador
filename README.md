@@ -37,8 +37,8 @@ Podés **crear tus propios juegos**, **encontrar partidos cerca tuyo**, **invita
 
 1. **Cloná el repositorio:**
    ```bash
-   git clone https://github.com/tuusuario/football-finder.git
-   cd football-finder
+   git clone [https://github.com/SantiAngelica/Trabajo_Practico_Integrador](https://github.com/SantiAngelica/Trabajo_Practico_Integrador)
+   cd Trabajo_Practico_Integrador
 
 ---
 
@@ -50,4 +50,5 @@ Podés probar la app en vivo acá 👇
 > ⚠️ *Si el primer acceso a un endpoin no funciona, puede ser porque la BASE DE DATOS se pausa automaticamente despues de cierto tiempo de inactividad, esperar un minuto y acceda el endpoint devuelta.*
 
    
+
 
