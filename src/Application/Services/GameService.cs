@@ -115,8 +115,7 @@ public class GameService : IGameService
         var game = await _gameRepository.GetById(id);
         if (game == null)
             throw new AppNotFoundException("Game not found");
-        if (game.CreatorId != uid)
-            throw new AppUnauthorizedException("Unauthorized");
+
         await _gameRepository.Delete(game);
         await _gameRepository.SaveChangesAsync();
         return true;

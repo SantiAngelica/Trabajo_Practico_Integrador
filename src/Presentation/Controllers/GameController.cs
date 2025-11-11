@@ -54,10 +54,10 @@ public class GameController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "0")]
+    [Authorize(Roles = "2")]
     public async Task<IActionResult> DeleteGame(int id)
     {
-        var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
+        var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.SuperAdmin);
         var result = await _gameService.DeleteGame(id, uid);
         if (!result)
         {

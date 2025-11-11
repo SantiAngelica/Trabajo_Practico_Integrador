@@ -39,7 +39,7 @@ public class GameRepository : EfRepository<Game>, IGameRepository
         return await _context
             .Games.Include(g => g.Participations)
             .Include(g => g.Reservation)
-            .Where(g => g.CreatorId == userId)
+            .Where(g => g.CreatorId == userId && g.Date >= DateOnly.FromDateTime(DateTime.Now))
             .ToListAsync();
     }
 }
