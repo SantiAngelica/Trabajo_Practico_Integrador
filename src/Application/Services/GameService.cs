@@ -122,9 +122,15 @@ public class GameService : IGameService
         return true;
     }
 
-    public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId, States reservationState)
+    public async Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(
+        int ownerId,
+        States reservationState
+    )
     {
-        var games = await _gameRepository.GetByPropertyId(propertyId, reservationState);
+        var property = await _propertyRepository.GetByOwnerId(ownerId);
+        if (property == null)
+            throw new AppNotFoundException("Property not found for the given owner ID");
+        var games = await _gameRepository.GetByPropertyId(property.Id, reservationState);
         if (games == null)
         {
             throw new AppNotFoundException("No games found for the given property ID");

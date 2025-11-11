@@ -54,7 +54,8 @@ public record GameWithApplicationsDto(
     List<ShortUserDto> Players,
     string PropertyName,
     string PropertyAdress,
-    string PropertyZone
+    string PropertyZone,
+    States State
 )
 {
     public static GameWithApplicationsDto Create(Game game)
@@ -75,7 +76,8 @@ public record GameWithApplicationsDto(
                 .ToList(),
             game.PropertyName,
             game.PropertyAdress,
-            game.PropertyZone
+            game.PropertyZone,
+            game.Reservation != null ? game.Reservation.State : States.Aceptada
         );
     }
 

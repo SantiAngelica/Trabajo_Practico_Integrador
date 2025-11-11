@@ -36,6 +36,21 @@ public class ParticipationService : IParticipationService
         var game = await _gameRepository.GetById(participationRequestDto.GameId);
         if (game == null)
             throw new AppNotFoundException("Game not found");
+        System.Console.WriteLine("-------------------------------------");
+        System.Console.WriteLine(participationRequestDto.UserId);
+        System.Console.WriteLine(participationRequestDto.GameId);
+
+        var existingParticipation = await _participationRepository.GetByUserIdAndGameId(
+            participationRequestDto.UserId,
+            participationRequestDto.GameId
+        );
+        if (existingParticipation != null)
+            if (existingParticipation.State == States.Aceptada)
+                throw new AppValidationException("User alredy in game");
+            else if (existingParticipation.Type == ParticipationType.Invitacion)
+                throw new AppValidationException("User alredy has an invitation for this game");
+            else if (existingParticipation.Type == ParticipationType.Postulacion)
+                throw new AppValidationException("User alredy has an application for this game");
 
         var newParticipation = game.AddParticipation(
             participationRequestDto.UserId,
@@ -95,6 +110,7 @@ public class ParticipationService : IParticipationService
     public async Task<IReadOnlyList<ParticipationDto>> GetAceptedParticipationsByUserId(int userId)
     {
         var participations = await _participationRepository.GetAceptedByUserId(userId);
+
         if (participations == null)
         {
             throw new AppNotFoundException("Participations not found for the User Id given");

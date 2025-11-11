@@ -11,6 +11,7 @@ using Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -109,7 +110,11 @@ builder.Services.AddHttpClient(
     }
 );
 
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 

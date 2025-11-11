@@ -6,7 +6,7 @@ namespace Application.Interfaces;
 
 public interface IPropertyService
 {
-    Task<PropertyDto?> CreateProperty(RequestPropertyDto property);
+    Task<PropertyDto?> CreateProperty(RequestPropertyDto property, int ownerId);
     Task<IReadOnlyList<PropertyDto>> GetProperties();
     Task<PropertyDto?> GetPropertyById(int id);
     Task<PropertyDto?> UpdateProperty(int id, RequestPropertyDto updateProperty);

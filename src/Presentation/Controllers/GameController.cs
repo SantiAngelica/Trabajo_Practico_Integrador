@@ -66,21 +66,20 @@ public class GameController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet("by-property/{propertyId}")]
+    [HttpGet("by-property")]
     [Authorize(Roles = "1")]
-    public async Task<IActionResult> GetGamesByPropertyId(
-        int propertyId,
-        States reservationState = States.Pendiente
-    )
+    public async Task<IActionResult> GetGamesByPropertyId([FromQuery] States reservationState = States.Pendiente)
     {
-        var games = await _gameService.GetGamesByPropertyId(propertyId, reservationState);
+        var ownerId = ValidatorExtension.ValidateRoleAndId(User, null, true, RolesEnum.Admin);
+        var games = await _gameService.GetGamesByPropertyId(ownerId, reservationState);
         return Ok(games);
     }
 
-    [HttpGet("by-userCreator/{uid}")]
+    [HttpGet("my-games")]
     [Authorize(Roles = "0")]
-    public async Task<IActionResult> GetGamesByUserCreator(int uid)
+    public async Task<IActionResult> GetGamesByUserCreator()
     {
+        var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
         var games = await _gameService.GetGamesByUserCreator(uid);
         return Ok(games);
     }

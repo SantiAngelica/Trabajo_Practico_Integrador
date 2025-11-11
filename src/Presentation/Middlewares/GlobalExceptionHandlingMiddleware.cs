@@ -26,6 +26,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
             _logger.LogError(ex, ex.Message);
 
             int statusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.StatusCode = statusCode;
 
             ProblemDetails problem = new()
             {
@@ -46,6 +47,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
             _logger.LogError(ex, ex.Message);
 
             int statusCode = (int)HttpStatusCode.NotFound;
+            context.Response.StatusCode = statusCode;
 
             ProblemDetails problem = new()
             {
@@ -66,6 +68,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
             _logger.LogError(ex, ex.Message);
 
             int statusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.StatusCode = statusCode;
 
             ProblemDetails problem = new()
             {

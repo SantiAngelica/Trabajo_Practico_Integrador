@@ -23,7 +23,8 @@ public class PropertyController : ControllerBase
     [Authorize(Roles = "1")] //solo admin
     public async Task<IActionResult> CreateProperty([FromBody] RequestPropertyDto propertyDto)
     {
-        var createdProperty = await _propertyService.CreateProperty(propertyDto);
+        var userId = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Admin);
+        var createdProperty = await _propertyService.CreateProperty(propertyDto, userId);
         return CreatedAtAction(
             nameof(GetPropertyByOwnerId),
             new { id = createdProperty.Id },
@@ -38,30 +39,18 @@ public class PropertyController : ControllerBase
         return Ok(properties);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetPropertyByOwnerId(int id)
+    [HttpGet("my-property")]
+    public async Task<IActionResult> GetPropertyByOwnerId()
     {
-        var property = await _propertyService.GetPropertyById(id);
-        if (property == null)
-        {
-            return NotFound();
-        }
+        var ownerId = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Admin);
+        var property = await _propertyService.GetPropertyById(ownerId);
         return Ok(property);
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "1")] //solo admin
-    public async Task<IActionResult> UpdateProperty(
-        int id,
-        [FromBody] RequestPropertyDto updatePropertyDto
-    )
+    // [Authorize(Roles = "1")] //solo admin
+    public async Task<IActionResult> UpdateProperty([FromBody] RequestPropertyDto updatePropertyDto, int id)
     {
-        ValidatorExtension.ValidateRoleAndId(
-            User,
-            updatePropertyDto.OwnerId,
-            true,
-            RolesEnum.Admin
-        );
         var updatedProperty = await _propertyService.UpdateProperty(id, updatePropertyDto);
         if (updatedProperty == null)
         {

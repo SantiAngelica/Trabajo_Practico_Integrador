@@ -25,9 +25,9 @@ public class PropertyService : IPropertyService
         _gameRepository = gameRepository;
     }
 
-    public async Task<PropertyDto?> CreateProperty(RequestPropertyDto propertyDto)
+    public async Task<PropertyDto?> CreateProperty(RequestPropertyDto propertyDto, int ownerId)
     {
-        var ExistingProperty = await _propertyRepository.GetByOwnerId(propertyDto.OwnerId);
+        var ExistingProperty = await _propertyRepository.GetByOwnerId(ownerId);
         if (ExistingProperty != null)
             throw new AppValidationException("Owner already has a property.");
 
@@ -42,7 +42,7 @@ public class PropertyService : IPropertyService
             propertyDto.Name,
             propertyDto.Address,
             propertyDto.Zone,
-            propertyDto.OwnerId,
+            ownerId,
             propertyDto.FieldsType,
             propertyDto.Schedules
         );
@@ -50,7 +50,7 @@ public class PropertyService : IPropertyService
         if (createdProperty == null)
             throw new Exception("Erro when creating property");
         await _propertyRepository.SaveChangesAsync();
-        return await this.GetPropertyById(propertyDto.OwnerId);
+        return await this.GetPropertyById(ownerId);
     }
 
     public async Task<IReadOnlyList<PropertyDto>> GetProperties()

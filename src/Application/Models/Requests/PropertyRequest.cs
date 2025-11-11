@@ -4,7 +4,6 @@ public record RequestPropertyDto(
     string Name,
     string Address,
     string Zone,
-    int OwnerId,
     List<int> FieldsType,
     List<int> Schedules
 );

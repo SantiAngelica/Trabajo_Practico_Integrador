@@ -16,7 +16,7 @@ public interface IGameService
 
     Task<bool> DeleteGame(int id, int uid);
 
-    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int propertyId, States reservationState);
+    Task<IReadOnlyList<GameDto>> GetGamesByPropertyId(int ownerId, States reservationState);
 
     Task<IReadOnlyList<GameWithApplicationsDto>> GetGamesByUserCreator(int userId);
 }

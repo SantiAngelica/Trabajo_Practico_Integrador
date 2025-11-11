@@ -28,4 +28,11 @@ public class ParticipationRepository : EfRepository<Participation>, IParticipati
             )
             .ToListAsync();
     }
+
+    public async Task<Participation?> GetByUserIdAndGameId(int userId, int gameId)
+    {
+        return await _context.Participations.FirstOrDefaultAsync(p =>
+            p.UserId == userId && p.GameId == gameId
+        );
+    }
 }
