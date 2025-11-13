@@ -24,6 +24,7 @@ public class ParticipationController : ControllerBase
     public async Task<IActionResult> GetMyParticipations()
     {
         var uid = ValidatorExtension.ValidateRoleAndId(User, null, false, RolesEnum.Player);
+
         var participations = await _participationService.GetParticipationsByUserId(uid);
         return Ok(participations);
     }

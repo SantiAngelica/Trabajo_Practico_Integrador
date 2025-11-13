@@ -14,7 +14,7 @@ public class ParticipationRepository : EfRepository<Participation>, IParticipati
     {
         return await _context
             .Participations.Include(p => p.Game.Reservation)
-            .Where(p => p.Game.Date > DateOnly.FromDateTime(DateTime.Now) && p.UserId == userId)
+            .Where(p => p.Game.Date >= DateOnly.FromDateTime(DateTime.Now) && p.UserId == userId)
             .ToListAsync();
     }
 
@@ -22,7 +22,7 @@ public class ParticipationRepository : EfRepository<Participation>, IParticipati
     {
         return await _context
             .Participations.Where(p =>
-                p.Game.Date > DateOnly.FromDateTime(DateTime.Now)
+                p.Game.Date >= DateOnly.FromDateTime(DateTime.Now)
                 && p.UserId == userId
                 && p.State == States.Aceptada
             )
