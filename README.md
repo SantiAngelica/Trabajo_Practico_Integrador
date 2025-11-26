@@ -25,12 +25,21 @@ Podés **crear tus propios juegos**, **encontrar partidos cerca tuyo**, **invita
 
 ## 🧠 Tecnologías utilizadas
 
-- **Backend:** ASP.NET / C# (Web API)  
+- **Backend:** ASP.NET / C# (Web API)
+- **ORM:** Entity Framweork / LINQ
 - **Base de datos:** SQL Server / Azure SQL Database  
 - **Autenticación:** JWT  
 - **Despliegue:** Azure App Services  
 - **CI/CD:** GitHub Actions (Deploy Automático)
 
+---
+
+## 💻 Arquitectura y Patrones 
+- **Clean Architecture**
+- **Domain Driven Design**
+- **Repository base**
+- **Dependency Injeccion**
+  
 ---
 
 ## ⚙️ Instalación y ejecución local
@@ -52,6 +61,7 @@ Podés probar la app en vivo acá 👇  (Front-end)
 > ⚠️ *Si el primer acceso a un endpoin no funciona, puede ser porque la BASE DE DATOS se pausa automaticamente despues de cierto tiempo de inactividad, esperar un minuto y acceda el endpoint devuelta.*
 
    
+
 
 
 
